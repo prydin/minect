@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'jacoco'
+
+version = '0.1.0'
+sourceCompatibility = '1.10'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    // implementation 'nu.rydin:NBT'
+    compile files('../NBT/build/libs/nbt-4.0.jar')
+    testCompile 'junit:junit:4.12'
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+    }
+}
+
+

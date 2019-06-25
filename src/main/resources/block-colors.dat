@@ -1,0 +1,275 @@
+# This file defines colors for blocks!
+# You can use your own color map using the -color-map <file> argument.
+#
+# The format is block ID, optionally colon and metadata, tab, color, optionally followed by another tab, a pound, and a comment.
+# Tabs are important; don't use spaces or commas!
+#
+# Empty lines and lines starting with # are ignored, too.
+#
+# 'default' must appear before other block ID -> color mappings
+# Any block with an ID not specifically mapped to a color after the default
+# mapping will be colored with the default color.
+
+default	                0xFFFF00FF      # To be used when no match is found
+air	                    0x00000000	    # Air
+stone	                0xFF7D7D7D	    # Stone
+grass	                0xFF939393	    # Grass Block
+dirt	                0xFF866043	    # Dirt
+coarse_dirt	            0xFF866043	    # Coarse Dirt
+cobblestone	            0xFF7A7A7A	    # Cobblestone
+cobblestone_stairs	    0xFF7A7A7A	    # Cobblestone
+cobblestone_slab	    0xFF7A7A7A	    # Cobblestone
+cobblestone_wall	    0xFF7A7A7A	    # Cobblestone
+
+# Stuff made of oak planks
+oak_planks	            0xFF9C7F4E	    # Oak Wood Planks
+oak_sign	            0xFF9C7F4E	    # Oak Sign
+oak_door	            0xFF9C7F4E	    # Oak Door
+oak_trapdoor	        0xFF9C7F4E	    # Oak Trapdoor
+oak_pressure_plate	    0xFF9C7F4E	    # Oak Pressure Plate
+oak_fence       	    0xFF9C7F4E	    # Oak Fence
+oak_fence_gate  	    0xFF9C7F4E	    # Oak Fence Gate
+oak_slab          	    0xFF9C7F4E	    # Oak Slab
+oak_stairs          	0xFF9C7F4E	    # Oak Staird
+
+# Stuff made of spruce planks
+spruce_planks	        0xFF674D2E	    # Spruce Wood Planks
+spruce_sign             0xFF674D2E      # Spruce Sign
+spruce_door             0xFF674D2E      # Spruce Door
+spruce_trapdoor         0xFF674D2E      # Spruce Trap Door
+spruce_pressure_plate   0xFF674D2E      # Spruce Pressure Plate
+spruce_fence            0xFF674D2E      # Spruce Fence
+spruce_fence_gate       0xFF674D2E      # Spruce Fence Gate
+spruce_slab             0xFF674D2E      # Spruce Slab
+spruce_stairs           0xFF674D2E      # Spruce stairs
+
+# Stuff made of birch planks
+birch_planks	        0xFFC3B37B	    # Birch Wood Planks
+birch_sign	            0xFFC3B37B	    # Birch Wood Sign
+birch_door              0xFFC3B37B      # Birch door
+birch_trapdoor          0xFFC3B37B      # Birch Trapdoor
+birch_pressure_plate    0xFFC3B37B      # Birch Pressure Plate
+birch_fence             0xFFC3B37B      # Birch Fence
+birch_fence_gate        0xFFC3B37B      # Birch Fence Gate
+birch_slab              0xFFC3B37B      # Birch Slab
+birch_stairs            0xFFC3B37B      # Birch Stairs
+
+# Stuff made of jungle planks
+jungle_planks	        0xFF9A6E4D	    # Jungle Wood Planks
+jungle_sign	            0xFF9A6E4D	    # Jungle Wood Sign
+jungle_door	            0xFF9A6E4D	    # Jungle Wood Door
+jungle_trapdoor         0xFF9A6E4D	    # Jungle Wood Trapdoor
+jungle_pressure_plate   0xFF9A6E4D	    # Jungle Wood Pressure Plate
+jungle_fence            0xFF9A6E4D	    # Jungle Wood Fence
+jungle_fence_gate       0xFF9A6E4D	    # Jungle Wood Fence Gate
+jungle_slab             0xFFC3B37B	    # Jungle Slab
+jungle_stairs           0xFFC3B37B      # Jungle Stairs
+
+birch_sapling	        0x6B769654	    # Birch Sapling
+jungle_sapling	        0x55305612	    # Jungle Sapling
+spruce_sapling	        0x53333A21	    # Spruce Sapling
+oak_sapling	            0x6B476625	    # Oak Sapling
+
+bedrock	                0xff0a0a0a      # Bedrock
+water	                0xB22E43F4	2   # Stationary Water
+lava	                0xFFD45A12	    # Lava
+sand	                0xFFDBD3A0	    # Sand
+gravel	                0xFF7E7C7A	    # Gravel
+gold_ore	            0xFF8F8B7C	    # Gold Ore
+iron_ore	            0xFF87827E	    # Iron Ore
+coal_ore	            0xFF737373	    # Coal Ore
+oak_log	                0xFF9A7D4D	    # Oak Log
+oak_wood                0xFF9A7D4D	    # Oak Wood
+spruce_log	            0xFF9A7D4D	    # Spruce Log
+spruce_wood	            0xFF9A7D4D	    # Spruce Wood
+birch_log	            0xFFCECEC9	    # Birch Log
+birch_wood	            0xFFCECEC9	    # Birch Wood
+jungle_log	            0xFF57431A	    # Jungle Log
+jungle_wood             0xFF57431A	    # Jungle Wood
+oak_log	                0xFF665131	    # Oak Log
+oah_wood	            0xFF665131	    # Oak Wood
+oak_leaves	            0x9A008700	1   # Oak Leaves
+spruce_leaves	        0xA5132613	1   # Spruce Leaves
+birch_leaves	        0x9A283816	1   # Birch Leaves
+jungle_leaves	        0xC9918E86	1   # Jungle Leaves
+sponge	                0xFFB6B639	    # Sponge
+glass	                0x46DAF0F4	    # Glass
+lapis_ore	            0xFF667086	    # Lapis Lazuli Ore
+lapis_block	            0xFF1D47A5	    # Lapis Lazuli Block
+dispenser	            0xFF606060	    # Dispenser
+
+sandstone	            0xFFDAD29E	    # Sandstone
+chiseled_sandstone	    0xFFDAD29E	    # Chiseled Sandstone
+cut_sandstone	        0xFFDAD29E	    # Cut Sandstone
+sandstone_stairs	    0xFFDAD29E	    # Sandstone stairs
+
+
+note_block	            0xFF644332	    # Note Block
+bed	                    0xFF8E1616      # Bed
+powered_rail	        0xAB9A6846	    # Powered Rail
+detector_rail	        0x9B786559	    # Detector Rail
+sticky_piston	        0xFF8D9263	    # Sticky Piston
+cobweb	                0x68DCDCDC	    # Cobweb
+shrub	                0x517B4F19	    # Shrub
+grass	                0xA2747474	0   # Grass
+fern	                0x4E787878	    # Fern
+dead_bush	            0x517B4F19	    # Dead Bush
+piston	                0xFF998159	    # Piston
+
+white_wool	            0xFFDDDDDD	    # White Wool
+orange_wool	            0xFFDB7D3E	    # Orange Wool
+magenta_wool	        0xFFB350BC	    # Magenta Wool
+light_blue_wool	        0xFF6A8AC9	    # Light Blue Wool
+yellow_wool	            0xFFB1A627	    # Yellow Wool
+lime_wool	            0xFF41AE38	    # Lime Wool
+pink_wool	            0xFFD08499	    # Pink Wool
+gray_wool	            0xFF404040	    # Gray Wool
+light_gray_wool	        0xFF9AA1A1	    # Light Gray Wool
+cyan_wool	            0xFF2E6E89	    # Cyan Wool
+purple_wool	            0xFF7E3DB5	    # Purple Wool
+blue_wool	            0xFF2E388D	    # Blue Wool
+brown_wool	            0xFF4F321F	    # Brown Wool
+green_wool	            0xFF35461B	    # Green Wool
+red_wool	            0xFF963430	    # Red Wool
+black_wool	            0xFF191616	    # Black Wool
+
+dandelion	            0x1E6CA200	    # Dandelion
+rose	                0x1D8A2B0D	    # Rose
+red_tulip	            0x1D8A2B0D	    # Red Tulip
+blue_orchid             0xFF2E388D      # Blue Orchid
+allium                  0xFF7E3DB5      # Allium
+azure_bluet             0xFF2E388D      # Azure bluet
+white_tulip             0xFFDDDDDD      # White tulip
+pink_tulip              0xFFD08499      # Pink tulip
+oxeye_daisy             0xFFDDDDDD      # Oxeye daisy
+
+brown_mushroom	        0xFF4F321F      # Brown Mushroom
+red_mushroom	        0x21C33538	    # Red Mushroom
+
+gold_block	            0xFFF9EC4E	    # Block of Gold
+iron_block          	0xFFDBDBDB	    # Block of Iron
+
+stone_slab	            0xFF9F9F9F	    # Stone Slab
+sandstone_slab	        0xFFDAD29E	    # Sandstone Slab
+wood_slab	            0xFF9C7F4E	    # Wooden Slab
+cobblestone_slab	    0xFF7A7A7A	    # Cobblestone Slab
+brick_slab	            0xFF926356	    # Brick Slab
+nether_brick_slab	    0xFF2C161A	    # Nether Slab
+quartz_slab	            0xFFECE9E2	    # Quartz Slab
+
+bricks	                0xFF926356      # Bricks
+tnt	                    0xFF82412F      # TNT
+bookshelf	            0xFF6B5839	    # Bookshelf
+mossy_cobblestone	    0xFF677967	    # Moss Stone
+obsidian	            0xFF14121D	    # Obsidian
+torch	                0x13826A3A	    # Torch
+fire	                0x8BD38C35	    # Fire TODO: Obsolete?
+spawner	                0x9B1A2731	    # Monster Spawner
+oak_stairs	            0xFF9C7F4E	    # Oak Wood Stairs
+chest	                0xFE6F5739	    # Chest
+redstone_wire	        0x80FA1010	    # Redstone Wire
+diamond_ore	            0xFF818C8F	    # Diamond Ore
+diamond_block	        0xFF61DBD5	    # Block of Diamond
+crafting_table	        0xFF6B472A	    # Crafting Table
+wheat	                0x0500B312	    # Wheat
+farmland	            0xFF734B2D	    # Dry Farmland
+
+furnace	                0xFF606060      # Furnace
+sign	                0x566F5739	    # Sign Post
+
+
+ladder	                0x8F795F34	    # Ladders
+rail	                0x8F796C58	    # Rails
+cobblestone_stairs	    0xFF7A7A7A	    # Cobblestone Stairs
+wall_sign	            0x206F5739	    # Wall Sign
+
+lever	                0x136A5940	    # Lever
+stone_pressure_plate	0xFF7D7D7D	    # Stone Pressure Plate
+iron_door           	0xCFBABABA	    # Iron Door
+
+
+redstone_ore	        0xFF846B6B	    # Redstone Ore
+redstone_torch	        0x135D3E26	    # Redstone Torch (inactive)
+redstone_wall_torch     0x135D3E26	    # Redstone Torch (inactive)
+
+snow	                0xFFEFFBFB	    # Snow
+ice	                    0x9F7DADFF	    # Ice
+snow_block	            0xFFEFFBFB	    # Snow Block
+
+cactus	                0xC30D6318	    # Cactus
+clay_block	            0xFF9EA4B0	    # Clay Block
+sugar_cane	            0x8C94C065	    # Sugar Cane
+
+jukebox	                0xFF6B4937	    # Jukebox
+pumpkin	                0xFFC07615	    # Pumpkin
+netherrack	            0xFF6F3634	    # Netherrack
+soul_sand	            0xFF544033	    # Soul Sand
+glowstone_block	        0xFF8F7645	    # Glowstone Block
+jack_o_lantern	        0xFFC07615	    # Jack 'o' Lantern
+cake	                0xC3E4CDCE	    # Cake Block
+
+# TODO: Infested rocks
+repeater	0xFF979393	# Redstone Repeater (inactive)
+
+stone_bricks	        0xFF7A7A7A	    # Stone Brick
+infested_stone_bricks	 0xFF7A7A7A	    # Stone Brick
+stone_brick_stairs	    0xFF7A7A7A	    # Stone Brick Stairs
+mossy_stone_bricks	    0xFF72776A	    # Mossy Stone Brick
+infested_mossy_stone_bricks	    0xFF72776A	# Mossy Stone Brick
+cracked_stone_bricks	0xFF767676	    # Cracked Stone Brick
+infestedcracked_stone_bricks	0xFF767676	# Infested Cracked Stone Brick
+chiseled_stone_bricks	0xFF767676	    # Chiseled Stone Brick
+infestedchiseled_stone_bricks	0xFF767676	# InfestedChiseled Stone Brick
+
+iron_bars	            0x736D6C6A	    # Iron Bars
+glass_pane	            0x1FD3EFF4	    # Glass Pane
+melon	                0xFF979924	    # Melon
+vine	                0x8A6F6F6F	    # Vines
+brick_stairs	        0xFF926356	    # Brick Stairs
+stone_brick_stair	    0xFF7A7A7A	    # Stone Brick Stairs
+mycelium	            0xFF6F6369	    # Mycelium
+lily_pad	            0x93335A21	    # Lily Pad
+nether_bricks	        0xFF2C161A	    # Nether Brick
+nether_brick_fence	    0xFF2C161A	    # Nether Brick Fence
+nether_brick_stairs 	0xFF2C161A	    # Nether Brick Stairs
+nether_wart	            0x2A6A0E1E	    # Nether Wart
+enchanting_table	    0xFF67403B	    # Enchantment Table
+brewing_stand	        0x767C6751	    # Brewing Stand
+cauldron	            0xFF373737	    # Cauldron
+end_portal	            0xFF101010	    # End Portal
+end_portal_frame	    0xFF597560	    # End Portal Frame
+end_stone	            0xFFDDDFA5	    # End Stone
+dragon_egg	            0xFF0C090F	    # Dragon Egg
+redstone_lamp	        0xFF462B1A	    # Redstone Lamp (inactive)
+cocoa	                0x2E8A8C40	    # Cocoa
+
+emerals_ore	            0xFF6D8074	    # Emerald Ore
+tripwire_hook	        0x2D8A8171	    # Tripwire Hook
+tripwire	            0x08818181	    # Tripwire
+emerald_block	        0xFF51D975	    # Block of Emerald
+command_block	        0xFFB2896F	    # Command Block
+beacon	                0xFF74DDD7	    # Beacon
+cobblestone_wall	    0xFF7A7A7A	    # Cobblestone Wall
+flower_pot	            0x31764133	    # Flower Pot
+
+carrots	                0x1701BB0F	    # Carrots
+potatoes	            0x1701BB0F	    # Potatoes
+
+anvil	                0x9F403C3C	    # Anvil
+trapped_chest	        0xFE6F5739	    # Trapped Chest
+light_weighted_pressure_plate	0xFFF9EC4E	# Weighted Pressure Plate (Light)
+heavy_weighted_pressure_plate	0xFFDBDBDB	# Weighted Pressure Plate (Heavy)
+comparator	            0xFF9C9695      # Redstone Comparator (inactive)
+dailight_sensor	        0xFF82745E	    # Daylight Sensor
+redstone_block	        0xFFAB1B09	    # Block of Redstone
+nether_quartz_block	    0xFF7D544F	    # Nether Quartz Ore
+hopper	                0xFF3E3E3E	    # Hopper
+quartz_block	        0xFFECE9E2	    # Block of Quartz
+chiseled_quartz_block	0xFFECE9E2      # Chiseled Quartz Block
+quartz_pillar           0xFFE7E3DB	    # Pillar Quartz Block
+quartz_stairs	        0xFFECE9E2	    # Quartz Stairs
+activator_rail	        0x9B685347	    # Activator Rail
+dropper	                0xFF565656	    # Dropper
+
+acadia_leaves	        0xFF005600	1   # Acadia leaves
+prismarine	            0xFF754974	    # Prismarine
