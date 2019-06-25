@@ -12,8 +12,15 @@
 
 default	                0xFFFF00FF      # To be used when no match is found
 air	                    0x00000000	    # Air
+cave_air	            0x00000000	    # Cave Air
 stone	                0xFF7D7D7D	    # Stone
+andesite	            0xFF787878	    # Andesite
+diorite	                0xFF808080	    # Diorite
+granite 	            0xFF888888	    # Andesite
+
 grass	                0xFF939393	    # Grass Block
+grass_block	            0xFF939393	    # Grass Block
+tall_grass              0xFF838383      # Tall Grass
 dirt	                0xFF866043	    # Dirt
 coarse_dirt	            0xFF866043	    # Coarse Dirt
 cobblestone	            0xFF7A7A7A	    # Cobblestone
@@ -70,7 +77,7 @@ jungle_sapling	        0x55305612	    # Jungle Sapling
 spruce_sapling	        0x53333A21	    # Spruce Sapling
 oak_sapling	            0x6B476625	    # Oak Sapling
 
-bedrock	                0xff0a0a0a      # Bedrock
+bedrock	                0xFF0A0A0A      # Bedrock
 water	                0xB22E43F4	2   # Stationary Water
 lava	                0xFFD45A12	    # Lava
 sand	                0xFFDBD3A0	    # Sand
@@ -135,11 +142,14 @@ black_wool	            0xFF191616	    # Black Wool
 
 dandelion	            0x1E6CA200	    # Dandelion
 rose	                0x1D8A2B0D	    # Rose
+rose_bush               0x1D8A2B0D	    # Rose bush
 red_tulip	            0x1D8A2B0D	    # Red Tulip
+poppy                   0x1D8A2B0D	    # Poppy
 blue_orchid             0xFF2E388D      # Blue Orchid
 allium                  0xFF7E3DB5      # Allium
 azure_bluet             0xFF2E388D      # Azure bluet
 white_tulip             0xFFDDDDDD      # White tulip
+lily_of_the_valley      0xFFEEEEEE      # Lily of the valley
 pink_tulip              0xFFD08499      # Pink tulip
 oxeye_daisy             0xFFDDDDDD      # Oxeye daisy
 

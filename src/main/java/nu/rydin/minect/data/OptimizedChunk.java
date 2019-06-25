@@ -20,7 +20,7 @@ public class OptimizedChunk {
         }
     }
 
-    private OptimizedSection[] sections;
+    private OptimizedSection[] sections = new OptimizedSection[16];
 
     private long[] heightMap;
 
@@ -42,18 +42,18 @@ public class OptimizedChunk {
     }
 
     public int getBiomeAt(int x, int z) {
-        return biomes[z << 4 + x];
+        return biomes[z * 16 + x];
     }
 
     public byte getBlockLightAt(int x, int y, int z) {
-        OptimizedSection s = sections[y >> 4];
+        OptimizedSection s = sections[y / 16];
         if(s == null) {
             return 0;
         }
         int idx = x + z << 4;
         int l = s.blockLights[idx >> 1];
         if((idx & 1) != 0) {
-            l >>= 4;
+            l /= 16;
         }
         return (byte) (l & 0x0f);
     }
@@ -79,23 +79,28 @@ public class OptimizedChunk {
     }
 
     public short getBlockIdAt(int x, int y, int z) {
-        return sections[y >> 4].blockIds[x][y & 15][z];
+        return sections[y/16].blockIds[x%16][y%16][z%16];
     }
 
     public int getHeight(int x, int z, boolean dry) {
-        return decodeHeightMapAt(dry ? dryHeightMap :heightMap, x, z);
+        return decodeHeightMapAt(dry ? dryHeightMap : heightMap, x, z);
     }
 
     private int decodeHeightMapAt(long[] map, int x, int z) {
-        int idx = x + z * 16 * 9; // 16x16 chunk, 9 bits per entry
+        int idx = ((x%16) + (z%16) * 16) * 9; // 16x16 chunk, 9 bits per entry
         int slot = idx / 64;
         int bit = idx % 64;
-        long h = map[slot] >> bit;
-        if(bit > 61) { // 61 because 64 - 9 = 61
+        long h = (map[slot] >>> bit) & 0x1ff;
+        int overflow = bit - (64 - 9);
+
+        // 0001 1100
+
+        if(overflow > 0) {
             // Value stretches into next slot
-            long mask = (1 << (62 - bit)) - 1; // Produce 61 - bit set bits.
-            h |= map[slot+1] & mask;
+            long mask = (1 << overflow) - 1;
+            h |= (map[slot+1] & mask) << (9 - overflow);
         }
-        return (int) (h * 0x1f);
+        System.err.println(x + " " + z + ": " + h);
+        return ((int) (h & 0x1ff)) - 1;
     }
 }

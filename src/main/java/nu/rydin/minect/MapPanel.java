@@ -329,7 +329,7 @@ public class MapPanel extends JPanel {
 		int chunk0 = toChunkIndex(x0);
 		int chunkMax = toChunkIndex(xMax);
 		int stripSize = chunkMax - chunk0 + 1;
-		System.out.println("Repainting area: " + x0 + "," + z0 + "," + xMax + "," + zMax + "Stripsize=" + stripSize);
+		System.out.println("Repainting area: " + x0 + "," + z0 + "," + xMax + "," + zMax + " Stripsize=" + stripSize);
 		try {
 			// Load initial strip
 			//

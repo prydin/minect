@@ -82,14 +82,19 @@ public class ChunkManager {
 		String filename = "r." + (x >> 5) + "." + (z >> 5) + ".mca";
 		MCAFile mca = regionCache.get(filename);
 		if (mca == null) {
+			File f = new File(regionPath, filename);
+			if(!f.exists()) {
+				return null;
+			}
 			RandomAccessFile file;
 			try {
-				file = new RandomAccessFile(new File(regionPath, filename), "rw");
+				file = new RandomAccessFile(f, "rw");
 			} catch (FileNotFoundException e) {
 				return null;
 			}
 			try {
 				mca = new MCAFile(x, z);
+				System.err.println("Deserializing file: " + filename);
 				mca.deserialize(file);
 				regionCache.put(filename, mca);
 				++reads;

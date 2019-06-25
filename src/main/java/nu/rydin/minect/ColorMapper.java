@@ -96,7 +96,7 @@ public class ColorMapper
 		BlockType bt = blockTypes.get(blockId);
 		Color base = bt.getColor();
 		int bm = bt.getBiomeMod();
-		if(bm != -1) {
+		if(bm != -1 && biomes[biome] != null) {
 			Color multiplier = biomes[biome][bm];
 			return new Color((base.getRed() * multiplier.getRed()) / 255,
 					(base.getGreen() * multiplier.getGreen()) / 255,
