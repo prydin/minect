@@ -86,7 +86,14 @@ public class OptimizedChunk {
         return decodeHeightMapAt(dry ? dryHeightMap : heightMap, x, z);
     }
 
+    public boolean isValid() {
+        return heightMap.length > 0;
+    }
+
     private int decodeHeightMapAt(long[] map, int x, int z) {
+        if( map.length != 36) {
+            System.err.println(x + " " + z + ": " + map.length);
+        }
         int idx = ((x%16) + (z%16) * 16) * 9; // 16x16 chunk, 9 bits per entry
         int slot = idx / 64;
         int bit = idx % 64;
@@ -100,7 +107,7 @@ public class OptimizedChunk {
             long mask = (1 << overflow) - 1;
             h |= (map[slot+1] & mask) << (9 - overflow);
         }
-        System.err.println(x + " " + z + ": " + h);
+       // System.err.println(x + " " + z + ": " + h);
         return ((int) (h & 0x1ff)) - 1;
     }
 }

@@ -164,10 +164,14 @@ public class MapPanel extends JPanel {
 	private int getHeightAt(int x, int z)  {
 		try {
 			OptimizedChunk chunk = chunkMgr.getChunk(toChunkIndex(x), toChunkIndex(z));
-			return chunk != null ? chunk.getHeight(x, z, dry) : 0;
+			return isValidChunk(chunk) ? chunk.getHeight(x, z, dry) : 0;
 		} catch(IOException e) {
 			return 0;
 		}
+	}
+
+	private static boolean isValidChunk(OptimizedChunk c) {
+		return c != null && c.isValid();
 	}
 	
 	private static int toChunkLocal(int c) {
@@ -356,7 +360,7 @@ public class MapPanel extends JPanel {
 					int cx = x & 15, cz = z & 15;
 					int chunkIdx = toChunkIndex(x) - chunk0;
 					OptimizedChunk chunk = strip[chunkIdx];
-					if(chunk == null)
+					if(!isValidChunk(chunk))
 					{
 						// Skip empty chunk
 						//
@@ -368,20 +372,20 @@ public class MapPanel extends JPanel {
 					switch(mapMode) {
 					case SURFACE: 
 						pixel = colorMapper.mapColor(chunk.getBlockIdAt(cx , y, cz), chunk.getBiomeAt(cx, cz));
-						if(paintShade && chunk != null) {
+						if(paintShade && isValidChunk(chunk)) {
 							int y1 = y;
 							if(x < xMax - 1) {
 								if(cz < 15) {
 									if(cx < 15)
 										y1 = chunk.getHeight(cx + 1, cz + 1, dry);
 									else 
-										y1 = chunkIdx < stripSize - 1 && strip[chunkIdx + 1] != null ? strip[chunkIdx + 1].getHeight(0, cz + 1, dry) : y;
+										y1 = chunkIdx < stripSize - 1 && isValidChunk(strip[chunkIdx + 1]) ? strip[chunkIdx + 1].getHeight(0, cz + 1, dry) : y;
 								} else {
 									if(nextStrip != null) {
 										if(cx < 15)
-											y1 = chunkIdx < stripSize && nextStrip[chunkIdx] != null ? nextStrip[chunkIdx].getHeight(cx + 1, 0, dry) : y;
+											y1 = chunkIdx < stripSize && isValidChunk(nextStrip[chunkIdx]) ? nextStrip[chunkIdx].getHeight(cx + 1, 0, dry) : y;
 										else 
-											y1 = chunkIdx < stripSize - 1 && nextStrip[chunkIdx + 1] != null ? nextStrip[chunkIdx + 1].getHeight(0, 0, dry) : y;
+											y1 = chunkIdx < stripSize - 1 && isValidChunk(nextStrip[chunkIdx + 1]) ? nextStrip[chunkIdx + 1].getHeight(0, 0, dry) : y;
 									} 
 								}
 							}
@@ -408,7 +412,7 @@ public class MapPanel extends JPanel {
 								OptimizedChunk neighbor = chunkIdx < stripSize - 1
 									? strip[chunkIdx + 1]
 									: chunkMgr.getChunk(x + 1, z);
-								if(neighbor != null && layer != neighbor.getHeight( 0, cz, dry) / 5)
+								if(isValidChunk(neighbor) && layer != neighbor.getHeight( 0, cz, dry) / 5)
 									darken = true;
 							}
 							if(!darken) {
@@ -417,7 +421,7 @@ public class MapPanel extends JPanel {
 										darken = true;
 								} else {
  									OptimizedChunk neighbor = nextStrip[chunkIdx];
-									if(neighbor != null && layer != neighbor.getHeight(cx, 0,dry ) / 5)
+									if(isValidChunk(neighbor) && layer != neighbor.getHeight(cx, 0,dry ) / 5)
 										darken = true;
 								}
 							} 
