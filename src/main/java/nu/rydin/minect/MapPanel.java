@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import net.querz.nbt.mca.Chunk;
 
 import javax.swing.JPanel;
@@ -41,7 +42,7 @@ public class MapPanel extends JPanel {
 	//private int zMax;
 	
 	private double scale;
-	
+
 	private ChunkManager chunkMgr;
 	
 	private boolean dragging = false;
@@ -164,11 +165,12 @@ public class MapPanel extends JPanel {
 	private int getHeightAt(int x, int z)  {
 		try {
 			OptimizedChunk chunk = chunkMgr.getChunk(toChunkIndex(x), toChunkIndex(z));
-			return isValidChunk(chunk) ? chunk.getHeight(x, z, dry) : 0;
+			return isValidChunk(chunk) ? chunk.getHeight(toChunkLocal(x), toChunkLocal(z), dry) : 0;
 		} catch(IOException e) {
 			return 0;
 		}
 	}
+
 
 	private static boolean isValidChunk(OptimizedChunk c) {
 		return c != null && c.isValid();
@@ -231,6 +233,11 @@ public class MapPanel extends JPanel {
 		if(this.sliceY != sliceY || this.scale != scale)
 			this.flush();
 		this.sliceY = sliceY;
+/*
+		Graphics2D g = (Graphics2D) this.getGraphics ();
+		boolean retinaTest = g.getFontRenderContext ().getTransform ()
+				.equals (AffineTransform.getScaleInstance (2.0, 2.0)); */
+
 		this.scale = scale;
 		this.repaint();
 	}
@@ -272,7 +279,8 @@ public class MapPanel extends JPanel {
 		//
 		if(chunkMgr == null) 
 			return;
-		
+
+		// Compute scaled and offset bounds
 		int startReads = chunkMgr.getReads();
 		final int xMax = xMin + transform(this.getWidth());
 		final int zMax = zMin + transform(this.getHeight());
@@ -335,13 +343,9 @@ public class MapPanel extends JPanel {
 		int stripSize = chunkMax - chunk0 + 1;
 		System.out.println("Repainting area: " + x0 + "," + z0 + "," + xMax + "," + zMax + " Stripsize=" + stripSize);
 		try {
-			// Load initial strip
-			//
 			OptimizedChunk[] strip = null;
 			OptimizedChunk[] nextStrip = null;
-			
-			// Paint from left to right
-			//
+
 			for(int z = z0; z < zMax; ++z) {
 				// Load strip if needed
 				//
@@ -444,7 +448,7 @@ public class MapPanel extends JPanel {
 						}
 						short blockId = chunk.getBlockIdAt(cx , sliceY, cz);
 						int biome = chunk.getBiomeAt(cx, cz);
-						if(highlightTorches && blockId == 56)
+						if(highlightTorches && colorMapper.isLightSource(blockId))
 							torches.add(new Point(x, z));
 						if(paintLight && blockId == 0) {
 							pixel = new Color(240, 240, 255 - 16 * chunk.getBlockLightAt(cx, sliceY, cz));
@@ -475,79 +479,7 @@ public class MapPanel extends JPanel {
 			bg.setColor(new Color(255, 255, 0, 80));
 			bg.drawArc(x - this.xMin - 5, z - this.zMin - 5, 10, 10, 0, 360);
 		}
-/*
-		System.out.println("Painting region " + x0 + "," + z0 + "," + xMax + "," + zMax);
-		for(int cz = (z0 / 16) - 1; cz <= zMax / 16; ++cz) {
-			for(int cx = (x0 / 16) - 1; cx <= xMax / 16; ++cx) {
-				try {
-					OptimizedChunk chunk = chunkMgr.getChunk(cx, cz);
-					if(chunk == null) 
-						chunk = Chunk.EMPTY;
-					if(mapMode == SLICE) {
-						boolean highlight = this.paintChunkSlice(img, sliceY, cx * 16 - xMin, cz * 16 - zMin, chunk);
-						if(highlight) {
-							g.setColor(Color.RED);
-							((Graphics2D) g).setStroke(new BasicStroke(5));
-							g.drawArc(scale * (cx * 16 - xMin), scale * (cz * 16 - zMin), 16, 16, 0, 360);
-						}
-					}
-					else if(mapMode == SURFACE)
-						this.paintSurfaceMap(img, cx * 16 - xMin, cz * 16 - zMin, chunk);
-				} catch(IOException e) { e.printStackTrace(); };
-			}
-		} */
-		
-		/*
-		for(int z = z0; z < zMax - 1; ++z) {
-			for(int x = x0; x < xMax - 1; ++x) {
-				int h = this.getHeightAt(x, z) / 5;
-				if(h != this.getHeightAt(x + 1, z) / 5  || h != this.getHeightAt(x, z + 1) / 5) {
-					try {
-						img.setRGB(x - xMin, z - zMin, new Color(img.getRGB(x - xMin, z - zMin)).darker().getRGB());
-					} catch(ArrayIndexOutOfBoundsException e) {
-						// If we should go out of bounds, just ignore it!
-					}
-				}
-			}
-		} */
-		//img.getGraphics().drawRect(0, 0, img.getWidth() - 1, img.getHeight() - 1);
 	}
-/*
-	private final void paintChunkSlice(BufferedImage img, int y, int x0, int z0, OptimizedChunk chunk) {
-		for(int x = 0; x < 16; ++x) {
-			for(int z = 0; z < 16; ++z) {
-				int tx = x0 + x;
-				int ty = z0 + z;
-				short blockId = chunk.getBlockIdAt(x, y, z);
-				if(tx < img.getWidth() && ty < img.getHeight() && tx > 0 && ty > 0)
-					img.setRGB(tx, ty, colorMapper.mapColor(blockId).getRGB());
-			}
-		}
-		boolean highlightChunk = false;
-		for(int idx = 0; idx < 256; ++idx) {
-			int p = idx + y * 256;
-			byte blockId = p < data.length ? data[p] : 0;
-			int tx = x0 + (idx & 0x0f);
-			int ty = z0 + (idx >> 4);
-			if(tx < img.getWidth() && ty < img.getHeight() && tx > 0 && ty > 0)
-				img.setRGB(tx, ty, colorMapper.mapColor(blockId).getRGB());
-		}
-		return highlightChunk;
-	}
-	
-	public void paintSurfaceMap(BufferedImage img, int x0, int z0, Chunk chunk) {
-		byte[] data = chunk.getRawData(); 
-		int[] hm = chunk.getHeightMap();
-		for(int idx = 0; idx < 256; ++idx) {
-			int y = hm[idx] - 1;
-			int p = idx + y * 256;
-			byte blockId = p < data.length && p > 0 ? data[p] : 0;
-			int tx = x0 + (idx & 0x0f);
-			int ty = z0 + (idx >> 4);
-			if(tx < img.getWidth() && ty < img.getHeight() && tx > 0 && ty > 0)
-				img.setRGB(tx, ty, colorMapper.mapColor(blockId).getRGB());
-		}
-	} */
 
 	private int getHeightAt(Chunk c, int x, int z, boolean dry) {
 		String key = dry ? "OCEAN_FLOOR" : "WORLD_SURFACE";

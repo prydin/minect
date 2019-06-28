@@ -56,7 +56,7 @@ public class ChunkManager {
 
 	private final ColorMapper colorMapper;
 	
-	private MRUCache<String, MCAFile> regionCache = new MRUCache<>(10);
+	private Cache<String, MCAFile> regionCache = new Cache<>(10);
 	
 	private final HashMap<Key, SoftReference<OptimizedChunk>> cache = new HashMap<>();
 	
@@ -84,6 +84,7 @@ public class ChunkManager {
 		if (mca == null) {
 			File f = new File(regionPath, filename);
 			if(!f.exists()) {
+				empties.add(key);
 				return null;
 			}
 			RandomAccessFile file;
@@ -108,6 +109,7 @@ public class ChunkManager {
 			cache.put(key, new SoftReference<>(oc));
 			return oc;
 		}
+		empties.add(key);
 		return null;
 	}
 

@@ -20,10 +20,13 @@ public class ColorMapper
 
 		private final int biomeMod;
 
-		public BlockType(String name, Color color, int biomeMod) {
+		private boolean lightSource;
+
+		public BlockType(String name, Color color, int biomeMod, boolean lightSource) {
 			this.name = name;
 			this.color = color;
 			this.biomeMod = biomeMod;
+			this.lightSource = lightSource;
 		}
 
 		public String getName() {
@@ -66,7 +69,8 @@ public class ColorMapper
 			String biomeStr = m.group(3);
 			int color = (int) Long.parseLong(colorStr, 16) & 0x00ffffff; // Strip transparency for now
 			int biome = biomeStr != null ? Integer.parseInt(biomeStr.trim()) : -1;
-			BlockType blockType = new BlockType(blockId, new Color(color), biome);
+			boolean lightSource = blockId.endsWith("torch");
+			BlockType blockType = new BlockType(blockId, new Color(color), biome, lightSource);
 			nameToIndex.put(blockId, (short) blockTypes.size());
 			blockTypes.add(blockType);
 		}
@@ -105,12 +109,16 @@ public class ColorMapper
 			return base;
 	}
 
+	public boolean isLightSource(int blockId) {
+		return blockTypes.get(blockId).lightSource;
+	}
+
 	public short getIdForName(String name) {
 		Short id = nameToIndex.get(name);
 		if(id != null) {
 			return id;
 		}
-		System.err.println("Warning: Block type " + name + " not defined");
+		//System.err.println("Warning: Block type " + name + " not defined");
 		return nameToIndex.get("minecraft:default");
 	}
 }

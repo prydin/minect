@@ -50,10 +50,13 @@ public class OptimizedChunk {
         if(s == null) {
             return 0;
         }
-        int idx = x + z << 4;
-        int l = s.blockLights[idx >> 1];
+        int idx = (x%16) + (z%16) * 8;
+        if(idx > s.blockLights.length - 1) {
+            return 0;
+        }
+        int l = s.blockLights[idx];
         if((idx & 1) != 0) {
-            l /= 16;
+            l >>>= 4;
         }
         return (byte) (l & 0x0f);
     }
@@ -79,7 +82,11 @@ public class OptimizedChunk {
     }
 
     public short getBlockIdAt(int x, int y, int z) {
-        return sections[y/16].blockIds[x%16][y%16][z%16];
+        int yIndex = y/16;
+        if(sections[yIndex] == null) {
+            return 0;
+        }
+        return sections[yIndex].blockIds[x%16][y%16][z%16];
     }
 
     public int getHeight(int x, int z, boolean dry) {

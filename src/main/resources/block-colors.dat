@@ -39,6 +39,17 @@ oak_fence_gate  	    0xFF9C7F4E	    # Oak Fence Gate
 oak_slab          	    0xFF9C7F4E	    # Oak Slab
 oak_stairs          	0xFF9C7F4E	    # Oak Staird
 
+# Stuff made of oak planks (TODO: Change to be different from oak)
+acadia_planks	        0xFF9C7F4E	    # Acadia Wood Planks
+acadia_sign	            0xFF9C7F4E	    # Acadia Sign
+acadia_door	            0xFF9C7F4E	    # Acadia Door
+acadia_trapdoor	        0xFF9C7F4E	    # Acadia Trapdoor
+acadia_pressure_plate	0xFF9C7F4E	    # Acadia Pressure Plate
+acadia_fence       	    0xFF9C7F4E	    # Acadia Fence
+acadia_fence_gate  	    0xFF9C7F4E	    # Acadia Fence Gate
+acadia_slab          	0xFF9C7F4E  	# Acadia Slab
+acadia_stairs          	0xFF9C7F4E	    # Acadia Stairs
+
 # Stuff made of spruce planks
 spruce_planks	        0xFF674D2E	    # Spruce Wood Planks
 spruce_sign             0xFF674D2E      # Spruce Sign
@@ -87,15 +98,19 @@ iron_ore	            0xFF87827E	    # Iron Ore
 coal_ore	            0xFF737373	    # Coal Ore
 oak_log	                0xFF9A7D4D	    # Oak Log
 oak_wood                0xFF9A7D4D	    # Oak Wood
+acadia_log	            0xFF9A7D4D	    # Oak Log
+acadia_wood             0xFF9A7D4D	    # Oak Wood
 spruce_log	            0xFF9A7D4D	    # Spruce Log
 spruce_wood	            0xFF9A7D4D	    # Spruce Wood
 birch_log	            0xFFCECEC9	    # Birch Log
 birch_wood	            0xFFCECEC9	    # Birch Wood
 jungle_log	            0xFF57431A	    # Jungle Log
 jungle_wood             0xFF57431A	    # Jungle Wood
-oak_log	                0xFF665131	    # Oak Log
-oah_wood	            0xFF665131	    # Oak Wood
+dark_oak_log	        0xFF665131	    # Oak Log
+dark_oak_wood	        0xFF665131	    # Oak Wood
+dark_oak_leaves	        0x9A006700	1   # Oak Leaves
 oak_leaves	            0x9A008700	1   # Oak Leaves
+acadia_leaves	        0x9A008700	1   # Acadia Leaves
 spruce_leaves	        0xA5132613	1   # Spruce Leaves
 birch_leaves	        0x9A283816	1   # Birch Leaves
 jungle_leaves	        0xC9918E86	1   # Jungle Leaves
@@ -119,6 +134,8 @@ sticky_piston	        0xFF8D9263	    # Sticky Piston
 cobweb	                0x68DCDCDC	    # Cobweb
 shrub	                0x517B4F19	    # Shrub
 grass	                0xA2747474	0   # Grass
+seagrass                0xA2646464      # Seagrass
+tall_seagrass           0xA2646464      # Tall seagrass
 fern	                0x4E787878	    # Fern
 dead_bush	            0x517B4F19	    # Dead Bush
 piston	                0xFF998159	    # Piston
@@ -155,6 +172,7 @@ oxeye_daisy             0xFFDDDDDD      # Oxeye daisy
 
 brown_mushroom	        0xFF4F321F      # Brown Mushroom
 red_mushroom	        0x21C33538	    # Red Mushroom
+red_mushroom_block	    0x21C33538	    # Red Mushroom
 
 gold_block	            0xFFF9EC4E	    # Block of Gold
 iron_block          	0xFFDBDBDB	    # Block of Iron
@@ -173,6 +191,7 @@ bookshelf	            0xFF6B5839	    # Bookshelf
 mossy_cobblestone	    0xFF677967	    # Moss Stone
 obsidian	            0xFF14121D	    # Obsidian
 torch	                0x13826A3A	    # Torch
+wall_torch	            0x13826A3A	    # Torch
 fire	                0x8BD38C35	    # Fire TODO: Obsolete?
 spawner	                0x9B1A2731	    # Monster Spawner
 oak_stairs	            0xFF9C7F4E	    # Oak Wood Stairs
