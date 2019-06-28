@@ -27,7 +27,7 @@ public class TestChunkRetrieval {
         ColorMapper colorMapper = new ColorMapper(this.getClass().getResource("/block-colors.dat"), this.getClass().getResource("/biome-colors.dat"));
         ChunkManager cm = new ChunkManager(new File("src/test/resources"), colorMapper);
         OptimizedChunk c = cm.getChunk(toChunkIndex(128), toChunkIndex(-241));
-        Assert.assertTrue(c.getHeight(1, 0, false) == 65);
+        Assert.assertTrue(c.getHeight(1, 0, false) == 64);
         for(int x = 0; x < 16; ++x) {
             for(int z = 0; z < 16; ++z) {
                 Assert.assertTrue(c.getHeight(x, z, false) < 80);
