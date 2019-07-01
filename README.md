@@ -7,6 +7,14 @@ To open a world, navigate to the world directory and select (but don't navigate 
 
 There are several modes. The right hand slider lets you change the scale. To pan, drag the image with the mouse. It may be a bit sluggish at first before the chunk cache is loaded.
 
+## How to run
+```
+gradle shadowJar
+java -jar build/libs/minect-0.1.0-all.jar
+```
+
+If anyone ends up being remotely interested in this tool, I will provide a compiled JAR as well.
+
 ### Normal mode. Just a map.
 You can turn elevaion curves on and off.
 
