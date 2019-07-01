@@ -106,9 +106,6 @@ public class OptimizedChunk {
         int bit = idx % 64;
         long h = (map[slot] >>> bit) & 0x1ff;
         int overflow = bit - (64 - 9);
-
-        // 0001 1100
-
         if(overflow > 0) {
             // Value stretches into next slot
             long mask = (1 << overflow) - 1;
