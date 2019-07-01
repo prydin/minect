@@ -165,7 +165,7 @@ public class MineCTApplication extends JFrame {
 			
 			@Override
 			public void mouseOverBlock(BlockEvent e) {
-				coordinateLabel.setText(e.getX() + "," + e.getY() + "," + e.getZ());
+				coordinateLabel.setText(e.getX() + "," + e.getY() + "," + e.getZ() + " - " + colorMapper.getBlockName(e.getType()));
 			}
 		});
 		

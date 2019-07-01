@@ -100,15 +100,17 @@ public class MapPanel extends JPanel {
 			
 			@Override
 			public void mouseMoved(MouseEvent event) {
+				if(chunkMgr == null) {
+					return;
+				}
 				int x = transform(event.getX()) + xMin;
 				int z = transform(event.getY()) + zMin;
 				int y = sliceY;
 				for(BlockListener bl : blockListeners) {
-					if(chunkMgr != null && mapMode == SURFACE) 
+					if(mapMode == SURFACE)
 						y = getHeightAt(x, z);
-					bl.mouseOverBlock(new BlockEvent(x, y, z, 0));
+					bl.mouseOverBlock(new BlockEvent(x, y, z, getBlockIdAt(x, y ,z)));
 				}
-				
 			}
 			
 			@Override
@@ -168,6 +170,15 @@ public class MapPanel extends JPanel {
 			return isValidChunk(chunk) ? chunk.getHeight(toChunkLocal(x), toChunkLocal(z), dry) : 0;
 		} catch(IOException e) {
 			return 0;
+		}
+	}
+
+	private short getBlockIdAt(int x, int y, int z) {
+		try {
+			OptimizedChunk chunk = chunkMgr.getChunk(toChunkIndex(x), toChunkIndex(z));
+			return isValidChunk(chunk) ? chunk.getBlockIdAt(x & 15, y, z & 15) : 0;
+		} catch(IOException e) {
+			return 9;
 		}
 	}
 
@@ -233,11 +244,6 @@ public class MapPanel extends JPanel {
 		if(this.sliceY != sliceY || this.scale != scale)
 			this.flush();
 		this.sliceY = sliceY;
-/*
-		Graphics2D g = (Graphics2D) this.getGraphics ();
-		boolean retinaTest = g.getFontRenderContext ().getTransform ()
-				.equals (AffineTransform.getScaleInstance (2.0, 2.0)); */
-
 		this.scale = scale;
 		this.repaint();
 	}
@@ -273,7 +279,6 @@ public class MapPanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		//ThreadPoolExecutor workers = new ThreadPoolExecutor(2, 2, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(10));
 
 		// No world open yet? Skip all painting!
 		//
@@ -284,8 +289,18 @@ public class MapPanel extends JPanel {
 		int startReads = chunkMgr.getReads();
 		final int xMax = xMin + transform(this.getWidth());
 		final int zMax = zMin + transform(this.getHeight());
-		((Graphics2D) g).setTransform(AffineTransform.getScaleInstance(scale, scale));
-		
+
+		// Create scale transform
+		//
+		Graphics2D g2 = (Graphics2D) g;
+		AffineTransform transform = AffineTransform.getScaleInstance(scale, scale);
+
+		// Workaround for Apple Retina Displays
+		//
+		AffineTransform displayScale = g2.getFontRenderContext ().getTransform ();
+		transform.concatenate(displayScale);
+		g2.setTransform(transform);
+
 		// Can we reuse the cached image in its entirety?
 		//
 		if(cachedImage != null && xMin == cacheImgX && zMin == cacheImgZ) {

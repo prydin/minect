@@ -33,5 +33,4 @@ public class BlockEvent {
 		return type;
 	}
 	
-	
 }

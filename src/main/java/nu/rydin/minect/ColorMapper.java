@@ -5,9 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +39,8 @@ public class ColorMapper
 			return biomeMod;
 		}
 	}
+
+	private Set<String> unknowns = new HashSet<>();
 
 	private Map<String, Short> nameToIndex = new HashMap<>();
 
@@ -118,7 +118,15 @@ public class ColorMapper
 		if(id != null) {
 			return id;
 		}
-		//System.err.println("Warning: Block type " + name + " not defined");
-		return nameToIndex.get("minecraft:default");
+		System.err.println("Warning: Block type " + name + " not defined");
+		short idx = (short) blockTypes.size();
+		BlockType bt = new BlockType(name, Color.PINK, -1, false);
+		blockTypes.add(bt);
+		nameToIndex.put(name, idx);
+		return idx;
+	}
+
+	public String getBlockName(int blockId) {
+		return blockTypes.get(blockId).name;
 	}
 }
