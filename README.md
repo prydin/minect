@@ -8,7 +8,7 @@ To open a world, navigate to the world directory and select (but don't navigate 
 There are several modes. The right hand slider lets you change the scale. To pan, drag the image with the mouse. It may be a bit sluggish at first before the chunk cache is loaded.
 
 ### Normal mode. Just a map.
-You can turn gridlines on and off.
+You can turn elevaion curves on and off.
 
 ![Normal Mode](./screenshots/normal.png)
 
