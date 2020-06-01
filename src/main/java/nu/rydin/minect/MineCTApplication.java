@@ -25,10 +25,12 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import nu.rydin.minect.data.ChunkManager;
+import nu.rydin.minect.data.DataManager;
 
 public class MineCTApplication extends JFrame {
-	private ChunkManager chunkMgr;
+	private final int initialZoom = 10;
+
+	private DataManager chunkMgr;
 	
 	private final MapPanel mapPanel;
 	
@@ -130,7 +132,7 @@ public class MineCTApplication extends JFrame {
 		GroupLayout layout = new GroupLayout(this.getContentPane()); 
 		this.setLayout(layout);
 		mapPanel.setVisible(true); 
-		mapPanel.setView(0, 0, 25, 1.0);
+		mapPanel.setView(0, 0, 25);
 		mapPanel.setMode(MapPanel.SURFACE);
 		mapPanel.setPreferredSize(new Dimension(1000, 1000));
 		this.setBounds(0, 0, 400, 400);
@@ -145,16 +147,17 @@ public class MineCTApplication extends JFrame {
 				mapPanel.setLayer(layerSlider.getValue());
 			}
 		});
-		scaleSlider = new JSlider(JSlider.VERTICAL, 1, 10, 1);
+		scaleSlider = new JSlider(JSlider.VERTICAL, 1, 100, initialZoom);
 		scaleSlider.setPaintTicks(true);
 		this.add(scaleSlider);
 		scaleSlider.addChangeListener(new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				mapPanel.setScale(scaleSlider.getValue());
+				mapPanel.setScale((double) scaleSlider.getValue() / 50.0D);
 			}
 		});
+		mapPanel.setScale(1.0D);
 		
 		statusPanel = new JPanel();
 		statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -192,7 +195,7 @@ public class MineCTApplication extends JFrame {
 				.addComponent(statusPanel));
 		
 		layerSlider.setVisible(true);
-		mapPanel.setHighlight(58);
+		// mapPanel.setHighlight(58);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 	
@@ -222,9 +225,9 @@ public class MineCTApplication extends JFrame {
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int status = fc.showOpenDialog(this);
 	    if(status == JFileChooser.APPROVE_OPTION) {
-	    	chunkMgr = new ChunkManager(fc.getSelectedFile(), colorMapper);
+	    	chunkMgr = new DataManager(fc.getSelectedFile(), colorMapper);
 	    	mapPanel.setChunkManager(chunkMgr);
-	    	mapPanel.setView(-17, 0, layerSlider.getValue(), scaleSlider.getValue());
+	    	mapPanel.setView(-17, 0, layerSlider.getValue());
 	    }
 
 	}

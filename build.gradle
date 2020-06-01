@@ -1,19 +1,30 @@
+plugins {
+  id 'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'jacoco'
 
 version = '0.1.0'
-sourceCompatibility = '1.10'
+sourceCompatibility = '1.8'
 
 repositories {
+    mavenLocal()
     jcenter()
+    // maven { url 'https://jitpack.io/' }
 }
 
 dependencies {
-    // implementation 'nu.rydin:NBT'
-    compile files('../NBT/build/libs/nbt-4.0.jar')
+    compile 'net.querz.nbt:nbt:5.4'
     testCompile 'junit:junit:4.12'
+}
+
+jar {
+   manifest {
+       attributes 'Main-Class': 'nu.rydin.minect.MineCT'
+   }
 }
 
 

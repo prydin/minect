@@ -21,10 +21,10 @@ granite_wall            0xFF888888      # Granite Wall
 granite_stairs          0xFF888888      # Granite Stairs
 
 
-grass	                0xFF939393	    # Grass Block
-grass_block	            0xFF939393	    # Grass Block
-tall_grass              0xFF838383      # Tall Grass
-grass_path              0xFF967053      # Grass path
+grass	                0xFF939393	 0  # Grass Block
+grass_block	            0xFF939393	 0  # Grass Block
+tall_grass              0xFF838383   0  # Tall Grass
+grass_path              0xFF967053   0  # Grass path
 dirt	                0xFF866043	    # Dirt
 coarse_dirt	            0xFF866043	    # Coarse Dirt
 cobblestone	            0xFF7A7A7A	    # Cobblestone
@@ -161,9 +161,8 @@ detector_rail	        0x9B786559	    # Detector Rail
 sticky_piston	        0xFF8D9263	    # Sticky Piston
 cobweb	                0x68DCDCDC	    # Cobweb
 shrub	                0x517B4F19	    # Shrub
-grass	                0xA2747474	0   # Grass
-seagrass                0xA2646464      # Seagrass
-tall_seagrass           0xA2646464      # Tall seagrass
+seagrass                0xA2646464  0   # Seagrass
+tall_seagrass           0xA2646464  0   # Tall seagrass
 fern	                0x4E787878	    # Fern
 dead_bush	            0x517B4F19	    # Dead Bush
 piston	                0xFF998159	    # Piston
@@ -303,9 +302,11 @@ melon	                0xFF979924	    # Melon
 vine	                0x8A6F6F6F	    # Vines
 brick_stairs	        0xFF926356	    # Brick Stairs
 stone_brick_stair	    0xFF7A7A7A	    # Stone Brick Stairs
+stone_brick_slab	    0xFF7A7A7A	    # Stone Brick Slab
 mycelium	            0xFF6F6369	    # Mycelium
 lily_pad	            0x93335A21	    # Lily Pad
 nether_bricks	        0xFF2C161A	    # Nether Brick
+nether_brick_slab	    0xFF2C161A	    # Nether Brick Slab
 nether_brick_fence	    0xFF2C161A	    # Nether Brick Fence
 nether_brick_stairs 	0xFF2C161A	    # Nether Brick Stairs
 nether_wart	            0x2A6A0E1E	    # Nether Wart
@@ -349,3 +350,10 @@ dropper	                0xFF565656	    # Dropper
 
 acacia_leaves	        0xFF005600	1   # acacia leaves
 prismarine	            0xFF754974	    # Prismarine
+
+# Concrete
+red_concrete            0xFF770000
+gray_concrete           0xFF777777
+green_concrete          0xFF007700
+yellow_concrete         0xFF777700
+blue_concrete           0xFF000077
