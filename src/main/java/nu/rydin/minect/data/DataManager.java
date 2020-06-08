@@ -33,7 +33,7 @@ public class DataManager {
 		super();
 		regionCache = new Cache2kBuilder<Point, MCAFile>() {}
 				.eternal(true)
-				.entryCapacity(12)
+				.entryCapacity(8)
 				.build();
 		surfaceCache = new Cache2kBuilder<Surface.Key, Surface>() {}
 				.eternal(true)

@@ -187,7 +187,7 @@ public class PaintEngine {
 			if(imgZ >= ctx.img.getHeight()) {
 				break; // Out of bounds
 			}
-			int imgX = rx * 512 + cx * 16 - ctx.x0 + startX;
+			int imgX = rx * 512 + cx * 16 - offsetX - ctx.x0 + startX;
 			if(startX == 0) {
 				imgX -= offsetX;
 			}
@@ -199,7 +199,7 @@ public class PaintEngine {
 				int y = surface.getHeight(x, z);
 				Color pixel = this.getPixelColor(surface, x, y, z, ctx);
 				if(imgZ < 0 || imgX < 0) {
-		//			System.err.println("Negavtive image coordinate: " + imgX + "," + imgZ + " cx=" + cx + " cz=" + cz + " offsetX=" + offsetX + " offsetZ=" + offsetZ);
+					System.err.println("Negavtive image coordinate: " + imgX + "," + imgZ + " cx=" + cx + " cz=" + cz + " offsetX=" + offsetX + " offsetZ=" + offsetZ);
 					continue;
 				}
 				if(ctx.showChunkGrid && (x == 15 || z == 15)) {

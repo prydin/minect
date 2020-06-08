@@ -56,7 +56,7 @@ public class BlockMapper
 		//
 		BufferedReader rdr = new BufferedReader(new InputStreamReader(blockFile.openStream()));
 		String line;
-		Pattern pattern = Pattern.compile("(\\w*)\\s+0x([0-9A-F]+)\\s+([0-9]+)?.*");
+		Pattern pattern = Pattern.compile("(\\w*)\\s+0x([0-9A-F]+)(\\s+[0-9]+)?.*");
 		while((line = rdr.readLine()) != null) {
 			line = line.trim();
 			if(line.length() == 0)

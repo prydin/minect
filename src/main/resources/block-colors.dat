@@ -28,6 +28,7 @@ tall_grass              0xFF838383   0  # Tall Grass
 grass_path              0xFF967053   0  # Grass path
 dirt	                0xFF866043	    # Dirt
 coarse_dirt	            0xFF866043	    # Coarse Dirt
+podzol	                0xFF967043	    # Podzol
 cobblestone	            0xFF7A7A7A	    # Cobblestone
 cobblestone_stairs	    0xFF7A7A7A	    # Cobblestone
 cobblestone_slab	    0xFF7A7A7A	    # Cobblestone
@@ -119,6 +120,7 @@ oak_sapling	            0x6B476625	    # Oak Sapling
 
 bedrock	                0xFF0A0A0A      # Bedrock
 water	                0xB22E43F4	2   # Stationary Water
+bubble_column           0xFFB3F7F4
 lava	                0xFFD45A12	    # Lava
 sand	                0xFFDBD3A0	    # Sand
 gravel	                0xFF7E7C7A	    # Gravel
@@ -167,6 +169,7 @@ tall_seagrass           0xA2646464  0   # Tall seagrass
 fern	                0x4E787878	    # Fern
 dead_bush	            0x517B4F19	    # Dead Bush
 piston	                0xFF998159	    # Piston
+moving_piston	        0xFF998159
 
 white_wool	            0xFFDDDDDD	    # White Wool
 white_bed  	            0xFFDDDDDD	    # White Bed
@@ -334,6 +337,8 @@ carrots	                0x1701BB0F	    # Carrots
 potatoes	            0x1701BB0F	    # Potatoes
 
 anvil	                0x9F403C3C	    # Anvil
+chipped_anvil	        0x9F403C3C
+damaged_anvil	        0x9F403C3C
 trapped_chest	        0xFE6F5739	    # Trapped Chest
 light_weighted_pressure_plate	0xFFF9EC4E	# Weighted Pressure Plate (Light)
 heavy_weighted_pressure_plate	0xFFDBDBDB	# Weighted Pressure Plate (Heavy)
@@ -346,6 +351,11 @@ quartz_block	        0xFFECE9E2	    # Block of Quartz
 chiseled_quartz_block	0xFFECE9E2      # Chiseled Quartz Block
 quartz_pillar           0xFFE7E3DB	    # Pillar Quartz Block
 quartz_stairs	        0xFFECE9E2	    # Quartz Stairs
+smooth_quartz	        0xFFECE9E2	    # Block of Quartz
+chiseled_smooth_quartz	0xFFECE9E2      # Chiseled Quartz Block
+smooth_quartz_pillar    0xFFE7E3DB	    # Pillar Quartz Block
+smooth_quartz_stairs	0xFFECE9E2	    # Quartz Stairs
+
 activator_rail	        0x9B685347	    # Activator Rail
 dropper	                0xFF565656	    # Dropper
 
@@ -356,5 +366,22 @@ prismarine	            0xFF754974	    # Prismarine
 red_concrete            0xFF770000
 gray_concrete           0xFF777777
 green_concrete          0xFF007700
+lime_concrete           0xFFB0F542
 yellow_concrete         0xFF777700
 blue_concrete           0xFF000077
+orange_concrete         0xFFF57242
+brown_concrete          0xFF4F1803
+white_concrete          0xFFCCCCCC
+black_concrete          0xFF000000
+
+slime_block             0xFF5FFA93
+
+purpur                  0xFFCF7ABC
+purpur_pillar           0xFFCF7ABC
+purpur_slab             0xFFCF7ABC
+purpur_block            0xFFCF7ABC
+
+orange_terracotta       0xFFD9661A
+
+scaffolding             0xFFBFAA21
+

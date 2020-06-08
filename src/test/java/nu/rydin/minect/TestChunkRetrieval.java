@@ -83,7 +83,6 @@ public class TestChunkRetrieval {
                 int sB = s.getBiome(x, z);
                 int cB = c.getBiomeAt(x, ys, z);
                 assertEquals(String.format("Biome at %d,%d", x, z), cB, sB);
-
             }
         }
     }

@@ -38,7 +38,7 @@ public class Surface extends AbstractSurface {
 
     protected Surface(Chunk chunk, boolean dry) {
         super();
-        heightMap = new ArbitraryWordArray(chunk.getHeightMaps().getLongArray(dry ? "OCEAN_FLOOR" : "WORLD_SURFACE"), 9);
+        this.heightMap = new ArbitraryWordArray(chunk.getHeightMaps().getLongArray(dry ? "OCEAN_FLOOR" : "WORLD_SURFACE"), 9);
     }
 
     @Override

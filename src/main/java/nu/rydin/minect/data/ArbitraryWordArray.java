@@ -23,6 +23,10 @@ public class ArbitraryWordArray {
         this.data = data;
     }
 
+    public int size() {
+        return (data.length * 64) / wordLength;
+    }
+
     /**
      * Gets the value at an index
      * @param idx The index

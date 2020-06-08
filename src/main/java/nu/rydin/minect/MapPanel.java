@@ -14,6 +14,8 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import net.querz.mca.Chunk;
+import nu.rydin.minect.data.AbstractSurface;
 import nu.rydin.minect.data.DataManager;
 import nu.rydin.minect.data.ChunkWrapper;
 
@@ -96,15 +98,28 @@ public class MapPanel extends JPanel {
 			
 			@Override
 			public void mouseMoved(MouseEvent event) {
-				/*if(chunkMgr == null || idMap == null || viewHeightMap == null) {
+				if(chunkMgr == null) {
 					return;
 				}
-				int x = transform(event.getX());
-				int z = transform(event.getY());
-				int y = viewHeightMap[x][z];
-				for(BlockListener bl : blockListeners) {
-					bl.mouseOverBlock(new BlockEvent(x + xMin, y, z + zMin, idMap[x][z]));
-				} */
+				try {
+					int x = transform(event.getX()) + xMin;
+					int z = transform(event.getY()) + zMin;
+					AbstractSurface s = mapMode == SURFACE
+							? chunkMgr.getSurface(toChunkIndex(x), toChunkIndex(z), dry)
+							: chunkMgr.getSlice(toChunkIndex(x), toChunkIndex(z), sliceY);
+					if(s == null) {
+						System.err.println(String.format("Surface is null at %d,%d. Shouldn't happen!", x, z));
+						return;
+					}
+					int lx = toChunkLocal(x);
+					int lz = toChunkLocal(z);
+					int y = s.getHeight(lx, lz);
+					for (BlockListener bl : blockListeners) {
+						bl.mouseOverBlock(new BlockEvent(x, y, z, s.getBlockId(lx, lz)));
+					}
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
 			}
 			
 			@Override
