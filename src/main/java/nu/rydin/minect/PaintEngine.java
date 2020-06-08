@@ -6,10 +6,8 @@ import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import net.querz.mca.Chunk;
-import net.querz.mca.MCAFile;
+import nu.rydin.minect.data.AbstractSurface;
 import nu.rydin.minect.data.DataManager;
-import nu.rydin.minect.data.ChunkWrapper;
 
 
 public class PaintEngine {
@@ -30,13 +28,12 @@ public class PaintEngine {
 		private final boolean highlightTorches;
 		private final boolean paintLight;
 		private final ImageObserver imageObserver;
+		private boolean showChunkGrid = false;
 		private List<Point> torches = new ArrayList<>();
-		private int[][] idMap;
-		private int[][] heightMap;
 
 		public Context(Graphics graphics, BufferedImage img, ImageObserver imageObserver, int x0, int z0, int xMax, int zMax,
 					   int sliceY, int mapMode, boolean dry, boolean paintShade, boolean paintElevation,
-					   boolean night, boolean highlightTorches, boolean paintLight) {
+					   boolean night, boolean highlightTorches, boolean paintLight, boolean showChunkGrid) {
 			this.graphics = graphics;
 			this.img = img;
 			this.x0 = x0;
@@ -51,12 +48,11 @@ public class PaintEngine {
 			this.sliceY = sliceY;
 			this.highlightTorches = highlightTorches;
 			this.paintLight = paintLight;
-			this.heightMap = new int[xMax-x0][zMax-z0];
-			this.idMap = new int[xMax-x0][zMax-z0];
 			this.imageObserver = imageObserver;
 			if(highlightTorches) {
 				this.torches = new ArrayList<>();
 			}
+			this.showChunkGrid = showChunkGrid;
 		}
 
 		public Graphics getGraphics() {
@@ -111,24 +107,24 @@ public class PaintEngine {
 			return highlightTorches;
 		}
 
-		public int[][] getIdMap() {
-			return idMap;
+		public boolean isShowChunkGrid() {
+			return showChunkGrid;
 		}
 
-		public int[][] getHeightMap() {
-			return heightMap;
+		public void setShowChunkGrid(boolean showChunkGrid) {
+			this.showChunkGrid = showChunkGrid;
 		}
 	}
 	
-	private ColorMapper colorMapper;
+	private BlockMapper blockMapper;
 
 	private DataManager chunkManager;
 	
 	private int highlight = -1;
 	
-	public PaintEngine(ColorMapper colorMapper, DataManager chunkManager) {
+	public PaintEngine(BlockMapper blockMapper, DataManager chunkManager) {
 		super();
-		this.colorMapper = colorMapper;
+		this.blockMapper = blockMapper;
 		this.chunkManager = chunkManager;
 	}
 
@@ -138,13 +134,9 @@ public class PaintEngine {
 		int rxMax = toRegionIndex(ctx.xMax);
 		int rz0 = toRegionIndex(ctx.z0);
 		int rzMax = toRegionIndex(ctx.zMax);
-		boolean firstZ = true;
 		for(int rz = rz0; rz <= rzMax; ++rz) {
-			boolean firstX = true;
 			for(int rx = rx0; rx <= rxMax; ++rx) {
-				this.paintRegion(rx, rz, firstX, firstZ, ctx);
-				firstX = false;
-				firstZ = false;
+				this.paintRegion(rx, rz, ctx);
 			}
 		}
 		// Deal with torches
@@ -163,76 +155,74 @@ public class PaintEngine {
 		}
 	}
 
-	private void paintRegion(int rx, int rz, boolean firstX, boolean firstZ, Context ctx) throws IOException {
-		MCAFile region = chunkManager.getRegion(rx, rz);
-		if(region == null) {
-			return;
-		}
-		System.err.println("Memory: " + Runtime.getRuntime().freeMemory() + "/" + Runtime.getRuntime().maxMemory());
-		int startX = firstX ? (ctx.x0 & 511) / 16 : 0;
-		int startZ = firstZ ? (ctx.z0 & 511) / 16 : 0;
-		boolean cFirstX = true;
-		boolean cFirstZ = true;
+	private void paintRegion(int rx, int rz, Context ctx) throws IOException {
+		System.err.println("Memory: " + Runtime.getRuntime().freeMemory() / 1024 / 1024 + "/" + Runtime.getRuntime().maxMemory() / 1024 / 1024);
+		int startX = rx * 512 - ctx.x0 < 0 ? (ctx.x0 & 511) / 16 : 0;
+		int startZ = rz * 512 - ctx.z0 < 0 ? (ctx.z0 & 511) / 16 : 0;
 		for(int cz = startZ; cz < 32; ++cz) {
-			cFirstX = true;
 			for(int cx = startX; cx < 32; ++cx) {
-				this.paintChunk(region, cx, cz, rx, rz, cFirstX, cFirstZ, ctx);
-				cFirstX = false;
-				cFirstZ = false;
+				this.paintChunk(cx, cz, rx, rz, ctx);
 			}
 		}
 	}
 
-	private void paintChunk(MCAFile region, int cx, int cz, int rx, int rz, boolean firstX, boolean firstZ, Context ctx) {
-		Chunk rawChunk = region.getChunk(cx, cz);
-		if(rawChunk == null) {
-			return;
-		}
-		ChunkWrapper chunk = new ChunkWrapper(rawChunk, cx, cz, colorMapper);
-		if (chunk == null || !chunk.isValid()) {
+	private void paintChunk(int cx, int cz, int rx, int rz, Context ctx) throws IOException{
+		int globalX = rx * 32 + cx;
+		int globalZ = rz * 32 + cz;
+		AbstractSurface surface = ctx.mapMode == MapPanel.SURFACE
+				? chunkManager.getSurface(globalX, globalZ, ctx.dry)
+				: chunkManager.getSlice(globalX, globalZ, ctx.sliceY);
+		if(surface == null) {
 			return;
 		}
 
 		int offsetX = ctx.x0 & 15;
 		int offsetZ = ctx.z0 & 15;
-		int startX = firstX ? offsetX & 15 : 0;
-		int startZ = firstZ ? offsetZ & 15 : 0;
+		int startX = globalX * 16 - ctx.x0 < 0 ? ctx.x0 & 15 : 0;
+		int startZ = globalZ * 16 - ctx.z0 < 0 ? ctx.z0 & 15 : 0;
+		//System.out.println(offsetX + " " + offsetZ + " " + startX + " " + startZ);
 
-		int imgZ = rz * 512 + cz * 16 + offsetZ - ctx.z0;
+		int imgZ = rz * 512 + cz * 16 - offsetZ - ctx.z0;
 		for (int z = startZ; z < 16; ++z, ++imgZ) {
 			if(imgZ >= ctx.img.getHeight()) {
 				break; // Out of bounds
 			}
-			int imgX = rx * 512 + cx * 16 + offsetX - ctx.x0;
+			int imgX = rx * 512 + cx * 16 - ctx.x0 + startX;
+			if(startX == 0) {
+				imgX -= offsetX;
+			}
 			for (int x = startX; x < 16; ++x, ++imgX) {
 				if (imgX >= ctx.img.getWidth()) {
 					break; // Out of bounds
 				}
 
-				int y = chunk.getHeight(x, z, ctx.dry);
-				Color pixel = this.getPixelColor(chunk, x, y, z, ctx);
+				int y = surface.getHeight(x, z);
+				Color pixel = this.getPixelColor(surface, x, y, z, ctx);
 				if(imgZ < 0 || imgX < 0) {
-					System.err.println("Negavtive image coordinate: " + imgX + "," + imgZ + " cx=" + cx + " cz=" + cz + " offsetX=" + offsetX + " offsetZ=" + offsetZ);
+		//			System.err.println("Negavtive image coordinate: " + imgX + "," + imgZ + " cx=" + cx + " cz=" + cz + " offsetX=" + offsetX + " offsetZ=" + offsetZ);
 					continue;
+				}
+				if(ctx.showChunkGrid && (x == 15 || z == 15)) {
+					pixel = Color.RED;
 				}
 				ctx.img.setRGB(imgX, imgZ, pixel.getRGB());
 			}
 		}
 	}
 
-	private Color getPixelColor(ChunkWrapper chunk, int x, int y, int z, Context ctx) {
+	private Color getPixelColor(AbstractSurface surface, int x, int y, int z, Context ctx) {
 		Color pixel;
-		short blockId = 0;
+		int blockId = 0;
 		switch (ctx.mapMode) {
 			case MapPanel.SURFACE:
-				blockId = chunk.getBlockIdAt(x, y, z);
-				pixel = colorMapper.mapColor(blockId, chunk.getBiomeAt(x, y, z));
+				blockId = surface.getBlockId(x, z);
+				pixel = blockMapper.mapColor(blockId, surface.getBiome(x, z));
 				if (ctx.paintShade) {
 
 					// Calculations for shading effect
 					int y1 = y;
 					if (x < 15 && z < 15) {
-						y1 = chunk.getHeight(x + 1, z + 1, ctx.dry);
+						y1 = surface.getHeight(x + 1, z + 1);
 					} else {
 						// TODO: Deal with edges
 					}
@@ -248,8 +238,8 @@ public class PaintEngine {
 				if (ctx.paintElevation) {
 					int layer = y / 5;
 					boolean darken = false;
-					if (x < 15) {
-						darken = layer != chunk.getHeight(x + 1, z, ctx.dry) / 5;
+					if (x < 15 && z < 15) {
+						darken = layer != surface.getHeight(x + 1, z) / 5 ||  layer != surface.getHeight(x, z + 1) / 5;
 					} else {
 						// TODO: Deal with edges
 					}
@@ -258,23 +248,19 @@ public class PaintEngine {
 
 				}
 				if (ctx.night) {
-					float factor = 0.2F + ((float) chunk.getSurfaceBlockLight(x, z) / 16.0F) * 0.8F;
+					float factor = 0.2F + ((float) surface.getBlockLight(x, z) / 16.0F) * 0.8F;
 					pixel = new Color((int) Math.min((float) pixel.getRed() * factor, 255),
 							(int) Math.min((float) pixel.getGreen() * factor, 255),
 							(int) Math.min((float) pixel.getBlue() * factor, 255));
 				}
 				break;
 			case MapPanel.SLICE:
-				if (ctx.sliceY >= y) {
-					pixel = Color.WHITE;
-					break;
-				}
-				blockId = chunk.getBlockIdAt(x, ctx.sliceY, z);
-				int biome = chunk.getBiomeAt(x, ctx.sliceY, z);
+				blockId = surface.getBlockId(x, z);
+				int biome = surface.getBiome(x, z);
 				if (ctx.paintLight && blockId == 0) {
-					pixel = new Color(240, 240, 255 - 16 * chunk.getBlockLightAt(x, ctx.sliceY, z));
+					pixel = new Color(240, 240, 255 - 16 * surface.getBlockLight(x, z));
 				} else
-					pixel = ctx.sliceY < y ? colorMapper.mapColor(blockId, biome) : Color.WHITE;
+					pixel = blockMapper.mapColor(blockId, biome);
 				break;
 			default:
 				System.err.println("Unknown map mode. Aborting redraw");

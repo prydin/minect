@@ -10,6 +10,7 @@
 # Any block with an ID not specifically mapped to a color after the default
 # mapping will be colored with the default color.
 
+undefined               0x00000000      # Used where no block exists, e.g. in the sky
 default	                0xFFFF00FF      # To be used when no match is found
 air	                    0x00000000	    # Air
 cave_air	            0x00000000	    # Cave Air

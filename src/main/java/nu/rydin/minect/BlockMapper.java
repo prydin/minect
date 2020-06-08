@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ColorMapper
+public class BlockMapper
 {
 	private static final class BlockType {
 		private final String name;
@@ -47,8 +47,10 @@ public class ColorMapper
 	private ArrayList<BlockType> blockTypes = new ArrayList<>();
 	
 	private final Color[][] biomes = new Color[256][];
-	
-	public ColorMapper(URL blockFile, URL biomeFile)  throws IOException {
+
+	private int undefinedId;
+
+	public BlockMapper(URL blockFile, URL biomeFile)  throws IOException {
 		
 		// Load block colors
 		//
@@ -94,6 +96,7 @@ public class ColorMapper
 			int water = (int) Long.parseLong(m.group(3), 16) & 0x00fffff;
 			biomes[biomeId] = new Color[] { new Color(grass), new Color(foliage), new Color(water) };
 		}
+		undefinedId = this.getIdForName("minecraft:undefined");
 	}
 	
 	public Color mapColor(int blockId, int biome) {
@@ -128,5 +131,9 @@ public class ColorMapper
 
 	public String getBlockName(int blockId) {
 		return blockTypes.get(blockId).name;
+	}
+
+	public int getUndefinedId() {
+		return undefinedId;
 	}
 }

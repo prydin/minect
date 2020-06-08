@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
 import nu.rydin.minect.data.DataManager;
 
 public class MineCTApplication extends JFrame {
-	private final int initialZoom = 10;
+	private final int initialZoom = 5;
 
 	private DataManager chunkMgr;
 	
@@ -56,7 +56,9 @@ public class MineCTApplication extends JFrame {
 	
 	private final JToggleButton nightButton;
 
-	private final ColorMapper colorMapper;
+	private final JToggleButton chunkButton;
+
+	private final BlockMapper blockMapper;
 	
 	private final ToolbarToggleListener toolbarListener = new ToolbarToggleListener();
 	
@@ -82,6 +84,8 @@ public class MineCTApplication extends JFrame {
 				mapPanel.setDry(checked);
 			} else if("NIGHT".equals(command)) {
 				mapPanel.setNight(checked);
+			} else if("CHUNK".equals(command)) {
+				mapPanel.setShowChunkGrid(checked);
 			}
 		}
 	}
@@ -123,11 +127,12 @@ public class MineCTApplication extends JFrame {
 		toolbar.add(torchButton = this.makeNavigationButton("torch.gif", "TORCH", "Highlight torches", "Torch"));
 		toolbar.add(contourButton = this.makeNavigationButton("contour.gif", "CONTOUR", "Contour lines", "Contour"));
 		toolbar.add(dryButton = this.makeNavigationButton("water.gif", "DRY", "Show/hide water", "Water"));
-		toolbar.add(nightButton = this.makeNavigationButton("night.gif", "NIGHT", "Night mode", "Night"));		
+		toolbar.add(nightButton = this.makeNavigationButton("night.gif", "NIGHT", "Night mode", "Night"));
+		toolbar.add(chunkButton = this.makeNavigationButton("chunk.png", "CHUNK", "Show chunk grid", "Chunk"));
 		this.add(toolbar);
 
-		colorMapper = new ColorMapper(this.getClass().getResource("/block-colors.dat"), this.getClass().getResource("/biome-colors.dat"));
-		mapPanel = new MapPanel(colorMapper);
+		blockMapper = new BlockMapper(this.getClass().getResource("/block-colors.dat"), this.getClass().getResource("/biome-colors.dat"));
+		mapPanel = new MapPanel(blockMapper);
 		this.add(mapPanel);
 		GroupLayout layout = new GroupLayout(this.getContentPane()); 
 		this.setLayout(layout);
@@ -147,17 +152,17 @@ public class MineCTApplication extends JFrame {
 				mapPanel.setLayer(layerSlider.getValue());
 			}
 		});
-		scaleSlider = new JSlider(JSlider.VERTICAL, 1, 100, initialZoom);
+		scaleSlider = new JSlider(JSlider.VERTICAL, 1, 10, initialZoom);
 		scaleSlider.setPaintTicks(true);
 		this.add(scaleSlider);
 		scaleSlider.addChangeListener(new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				mapPanel.setScale((double) scaleSlider.getValue() / 50.0D);
+				mapPanel.setScale((double) scaleSlider.getValue() / 5.0D);
 			}
 		});
-		mapPanel.setScale(1.0D);
+		mapPanel.setScale(initialZoom / 5.0D);
 		
 		statusPanel = new JPanel();
 		statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -168,7 +173,7 @@ public class MineCTApplication extends JFrame {
 			
 			@Override
 			public void mouseOverBlock(BlockEvent e) {
-				coordinateLabel.setText(e.getX() + "," + e.getY() + "," + e.getZ() + " - " + colorMapper.getBlockName(e.getType()));
+				coordinateLabel.setText(e.getX() + "," + e.getY() + "," + e.getZ() + " - " + blockMapper.getBlockName(e.getType()));
 			}
 		});
 		
@@ -225,7 +230,7 @@ public class MineCTApplication extends JFrame {
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int status = fc.showOpenDialog(this);
 	    if(status == JFileChooser.APPROVE_OPTION) {
-	    	chunkMgr = new DataManager(fc.getSelectedFile(), colorMapper);
+	    	chunkMgr = new DataManager(fc.getSelectedFile(), blockMapper);
 	    	mapPanel.setChunkManager(chunkMgr);
 	    	mapPanel.setView(-17, 0, layerSlider.getValue());
 	    }

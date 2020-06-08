@@ -2,7 +2,7 @@ package nu.rydin.minect.data;
 
 import net.querz.mca.Chunk;
 import net.querz.mca.Section;
-import nu.rydin.minect.ColorMapper;
+import nu.rydin.minect.BlockMapper;
 
 public class ChunkWrapper {
     private long[] heightMap;
@@ -17,9 +17,9 @@ public class ChunkWrapper {
 
     private Chunk chunk;
 
-    private ColorMapper cm;
+    private BlockMapper cm;
 
-    public ChunkWrapper(Chunk chunk, int x, int z, ColorMapper cm) {
+    public ChunkWrapper(Chunk chunk, int x, int z, BlockMapper cm) {
         this.chunk = chunk;
         this.cm = cm;
         this.x = x;

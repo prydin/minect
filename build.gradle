@@ -18,6 +18,8 @@ repositories {
 
 dependencies {
     compile 'net.querz.nbt:nbt:5.4'
+    compile group: 'org.cache2k', name: 'cache2k-api', version: '1.2.4.Final'
+    runtimeOnly group: 'org.cache2k', name: 'cache2k-core', version: '1.2.4.Final'
     testCompile 'junit:junit:4.12'
 }
 

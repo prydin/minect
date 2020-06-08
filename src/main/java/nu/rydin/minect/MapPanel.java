@@ -60,19 +60,17 @@ public class MapPanel extends JPanel {
 	private final List<BlockListener> blockListeners = new ArrayList<>();
 	
 	private int mapMode = SURFACE;
+
+	private boolean showChunkGrid = false;
 	
 	private final PaintEngine paintEngine;
 	
-	private final ColorMapper colorMapper;
-
-	private int[][] viewHeightMap;
-
-	private int[][] idMap;
+	private final BlockMapper blockMapper;
 	
-	MapPanel(ColorMapper colorMapper) {
+	MapPanel(BlockMapper blockMapper) {
 		super();
-		this.colorMapper = colorMapper;
-		this.paintEngine = new PaintEngine(colorMapper, chunkMgr);
+		this.blockMapper = blockMapper;
+		this.paintEngine = new PaintEngine(blockMapper, chunkMgr);
 		this.setDoubleBuffered(false);
 		this.addComponentListener(new ComponentListener() {
 			
@@ -220,6 +218,12 @@ public class MapPanel extends JPanel {
 		this.repaint();
 	}
 
+	public void setShowChunkGrid(boolean b) {
+		showChunkGrid = b;
+		this.flush();
+		this.repaint();
+	}
+
 	public void setView(int xMin, int zMin, int sliceY) {
 		this.xMin = xMin;
 		this.zMin = zMin;
@@ -268,12 +272,7 @@ public class MapPanel extends JPanel {
 		super.paintComponent(g);
 
 		// No world open yet? Skip all painting!
-		//
 		if(chunkMgr == null) {
-			return;
-		}
-		if(dragging && cachedImage != null) {
-			g.drawImage(cachedImage, cacheImgX - xMin, cacheImgZ - zMin, this);
 			return;
 		}
 
@@ -283,27 +282,29 @@ public class MapPanel extends JPanel {
 		final int zMax = zMin + transform(this.getHeight());
 
 		// Create scale transform
-		//
 		Graphics2D g2 = (Graphics2D) g;
 		AffineTransform transform = AffineTransform.getScaleInstance(scale, scale);
 
 		// Workaround for Apple Retina Displays
-		//
 		AffineTransform displayScale = g2.getFontRenderContext ().getTransform ();
 		transform.concatenate(displayScale);
 		g2.setTransform(transform);
 
+		// Dragging? Just move the cached image until mouse button is released.
+		if(dragging && cachedImage != null) {
+			g.drawImage(cachedImage, cacheImgX - xMin, cacheImgZ - zMin, null);
+			return;
+		}
+
 		// Can we reuse the cached image in its entirety?
-		//
 		if(cachedImage != null && xMin == cacheImgX && zMin == cacheImgZ) {
 			g.drawImage(cachedImage, 0, 0, this);
 			return;
 		}
 		
 		// Can we reuse part of the cached image?
-		//
-		//cachedImage = null;
 		final BufferedImage img = new BufferedImage(transform(this.getWidth()), transform(this.getHeight()), BufferedImage.TYPE_INT_RGB);
+		/*
 		if(cachedImage != null && cacheImgX < xMax && cacheImgZ < zMax && cacheImgX + cachedImage.getWidth() > xMin && cacheImgZ + cachedImage.getHeight() > zMin) {
 			Graphics2D bg = (Graphics2D) img.getGraphics();
 			System.out.println("cachedX: " + cacheImgX + ", width: " + cachedImage.getWidth() + ", xMin: " + xMin + " drawMax: " + (cacheImgX + cachedImage.getWidth()));
@@ -314,7 +315,6 @@ public class MapPanel extends JPanel {
 			//
 			if(xMin < cacheImgX)
 				this.paintRect(img, xMin, zMin, cacheImgX + 1, zMax);
-				
 			
 			// Need to fill on the right?
 			//
@@ -332,9 +332,9 @@ public class MapPanel extends JPanel {
 				this.paintRect(img, xMin, cacheImgZ + cachedImage.getHeight(), xMax, zMax);
 		} else {
 			// No overlap/no image. Complete repaint.
-			//
+			// */
 			this.paintRect(img, xMin, zMin, xMax, zMax);
-		}
+		//}
 		g.drawImage(img, 0, 0, this);
 		cachedImage = img;
 		cacheImgX = xMin;
@@ -347,14 +347,12 @@ public class MapPanel extends JPanel {
 		PaintEngine.Context ctx = new PaintEngine.Context(
 				img.getGraphics(), img, this, x0, z0, xMax, zMax, this.sliceY,
 				this.mapMode, this.dry, this.paintShade, this.paintContour, this.night, this.highlightTorches,
-				this.paintLight);
+				this.paintLight, this.showChunkGrid);
 		try {
 			paintEngine.paintArea(ctx);
 		} catch(IOException e) {
 			e.printStackTrace();
 			return;
 		}
-		this.idMap = ctx.getIdMap();
-		this.viewHeightMap = ctx.getHeightMap();
 	}
 }
