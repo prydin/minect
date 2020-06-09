@@ -176,30 +176,30 @@ public class PaintEngine {
 			return;
 		}
 
-		int offsetX = ctx.x0 & 15;
-		int offsetZ = ctx.z0 & 15;
-		int startX = globalX * 16 - ctx.x0 < 0 ? ctx.x0 & 15 : 0;
-		int startZ = globalZ * 16 - ctx.z0 < 0 ? ctx.z0 & 15 : 0;
-		//System.out.println(offsetX + " " + offsetZ + " " + startX + " " + startZ);
+		// Calculate where in the resulting image this chunk starts
+		int anchorX = rx * 512 + cx * 16 - ctx.x0;
+		int anchorZ = rz * 512 + cz * 16 - ctx.z0;
 
-		int imgZ = rz * 512 + cz * 16 - offsetZ - ctx.z0;
-		for (int z = startZ; z < 16; ++z, ++imgZ) {
+		// If the chunk goes into negative coordinates, we have to adjust for that
+		int startX = anchorX < 0 ? -anchorX : 0;
+		int startZ = anchorZ < 0 ? -anchorZ : 0;
+
+		// ImgX and ImgZ are normalized to zero-based coordinates
+		for (int z = startZ; z < 16; ++z) {
+			int imgZ = anchorZ + z;
 			if(imgZ >= ctx.img.getHeight()) {
 				break; // Out of bounds
 			}
-			int imgX = rx * 512 + cx * 16 - offsetX - ctx.x0 + startX;
-			if(startX == 0) {
-				imgX -= offsetX;
-			}
-			for (int x = startX; x < 16; ++x, ++imgX) {
+			for (int x = startX; x < 16; ++x) {
+				int imgX = anchorX + x;
 				if (imgX >= ctx.img.getWidth()) {
 					break; // Out of bounds
 				}
 
 				int y = surface.getHeight(x, z);
 				Color pixel = this.getPixelColor(surface, x, y, z, ctx);
-				if(imgZ < 0 || imgX < 0) {
-					System.err.println("Negavtive image coordinate: " + imgX + "," + imgZ + " cx=" + cx + " cz=" + cz + " offsetX=" + offsetX + " offsetZ=" + offsetZ);
+				if(imgX < 0 || imgZ < 0) {
+					System.err.println("Negative image coordinate: " + anchorX + "," + anchorZ + " cx=" + cx + " cz=" + cz);
 					continue;
 				}
 				if(ctx.showChunkGrid && (x == 15 || z == 15)) {
