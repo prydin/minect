@@ -7,6 +7,7 @@ import java.util.Objects;
 import net.querz.mca.MCAFile;
 import net.querz.mca.Chunk;
 import nu.rydin.minect.BlockMapper;
+import nu.rydin.minect.MapPanel;
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
 import org.cache2k.CacheEntry;
@@ -47,6 +48,24 @@ public class DataManager {
 				.build();
 		this.regionPath = regionPath;
 		blockMapper = cm;
+	}
+
+	public boolean isSurfaceCached(int cx, int cz, boolean dry) {
+		Surface.Key key = new Surface.Key(cx, cz, dry);
+		if(surfaceCache.containsKey(key)) {
+			return true;
+		}
+		Point p = new Point(cx >> 5, cz >> 5);
+		return empties.contains(p) || regionCache.containsKey(p);
+	}
+
+	public boolean isSliceCached(int cx, int cz, int y) {
+		Slice.Key key = new Slice.Key(cx, cz, y);
+		if(sliceCache.containsKey(key)) {
+			return true;
+		}
+		Point p = new Point(cx >> 5, cz >> 5);
+		return empties.contains(p) || regionCache.containsKey(p);
 	}
 
 	public Surface getSurface(int cx, int cz, boolean dry) throws IOException {

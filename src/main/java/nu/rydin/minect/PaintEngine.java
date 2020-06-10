@@ -6,6 +6,7 @@ import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 import nu.rydin.minect.data.AbstractSurface;
 import nu.rydin.minect.data.DataManager;
 
@@ -19,6 +20,8 @@ public class PaintEngine {
 		private final int z0;
 		private final int xMax;
 		private final int zMax;
+		private final int globalX0;
+		private final int globalZ0;
 		private final int sliceY;
 		private final int mapMode;
 		private final boolean dry;
@@ -32,7 +35,7 @@ public class PaintEngine {
 		private List<Point> torches = new ArrayList<>();
 
 		public Context(Graphics graphics, BufferedImage img, ImageObserver imageObserver, int x0, int z0, int xMax, int zMax,
-					   int sliceY, int mapMode, boolean dry, boolean paintShade, boolean paintElevation,
+					   int globalX0, int globalZ0, int sliceY, int mapMode, boolean dry, boolean paintShade, boolean paintElevation,
 					   boolean night, boolean highlightTorches, boolean paintLight, boolean showChunkGrid) {
 			this.graphics = graphics;
 			this.img = img;
@@ -40,6 +43,8 @@ public class PaintEngine {
 			this.z0 = z0;
 			this.xMax = xMax;
 			this.zMax = zMax;
+			this.globalX0 = globalX0;
+			this.globalZ0 = globalZ0;
 			this.mapMode = mapMode;
 			this.dry = dry;
 			this.paintElevation = paintElevation;
@@ -49,83 +54,40 @@ public class PaintEngine {
 			this.highlightTorches = highlightTorches;
 			this.paintLight = paintLight;
 			this.imageObserver = imageObserver;
-			if(highlightTorches) {
+			if (highlightTorches) {
 				this.torches = new ArrayList<>();
 			}
 			this.showChunkGrid = showChunkGrid;
 		}
+	}
 
-		public Graphics getGraphics() {
-			return graphics;
+	public class Worker extends SwingWorker<Void, Object> {
+		private final Context ctx;
+
+		public Worker(Context ctx) {
+			this.ctx = ctx;
 		}
 
-		public BufferedImage getImg() {
-			return img;
-		}
-
-		public int getX0() {
-			return x0;
-		}
-
-		public int getZ0() {
-			return z0;
-		}
-
-		public int getxMax() {
-			return xMax;
-		}
-
-		public int getzMax() {
-			return zMax;
-		}
-
-		public int getMapMode() {
-			return mapMode;
-		}
-
-		public boolean isDry() {
-			return dry;
-		}
-
-		public boolean isPaintShade() {
-			return paintShade;
-		}
-
-		public boolean isPaintElevation() {
-			return paintElevation;
-		}
-
-		public boolean isNight() {
-			return night;
-		}
-
-		public int getSliceY() {
-			return sliceY;
-		}
-
-		public boolean isHighlightTorches() {
-			return highlightTorches;
-		}
-
-		public boolean isShowChunkGrid() {
-			return showChunkGrid;
-		}
-
-		public void setShowChunkGrid(boolean showChunkGrid) {
-			this.showChunkGrid = showChunkGrid;
+		@Override
+		protected Void doInBackground() throws Exception {
+			PaintEngine.this.paintArea(ctx);
+			return null;
 		}
 	}
 	
 	private BlockMapper blockMapper;
 
 	private DataManager chunkManager;
-	
-	private int highlight = -1;
-	
+
 	public PaintEngine(BlockMapper blockMapper, DataManager chunkManager) {
 		super();
 		this.blockMapper = blockMapper;
 		this.chunkManager = chunkManager;
+	}
+
+	public void paintAreaAsynch(Context ctx) {
+		Worker w = new Worker(ctx);
+		w.execute();
 	}
 
 	public void paintArea(Context ctx) throws IOException {
@@ -139,6 +101,7 @@ public class PaintEngine {
 				this.paintRegion(rx, rz, ctx);
 			}
 		}
+
 		// Deal with torches
 		//
 		if(ctx.highlightTorches) {
@@ -175,6 +138,8 @@ public class PaintEngine {
 		if(surface == null) {
 			return;
 		}
+		int globalXOffset = ctx.x0 - ctx.globalX0;
+		int globalZOffset = ctx.z0 - ctx.globalZ0;
 
 		// Calculate where in the resulting image this chunk starts
 		int anchorX = rx * 512 + cx * 16 - ctx.x0;
@@ -184,14 +149,15 @@ public class PaintEngine {
 		int startX = anchorX < 0 ? -anchorX : 0;
 		int startZ = anchorZ < 0 ? -anchorZ : 0;
 
-		// ImgX and ImgZ are normalized to zero-based coordinates
+		// ImgX and ImgZ are normalized to zero-based coordinates within the rectangle
+		// we're paining. They are NOT screen or image coordinates!
 		for (int z = startZ; z < 16; ++z) {
-			int imgZ = anchorZ + z;
+			int imgZ = anchorZ + z + globalZOffset;
 			if(imgZ >= ctx.img.getHeight()) {
 				break; // Out of bounds
 			}
 			for (int x = startX; x < 16; ++x) {
-				int imgX = anchorX + x;
+				int imgX = anchorX + x + globalXOffset;
 				if (imgX >= ctx.img.getWidth()) {
 					break; // Out of bounds
 				}
@@ -199,7 +165,7 @@ public class PaintEngine {
 				int y = surface.getHeight(x, z);
 				Color pixel = this.getPixelColor(surface, x, y, z, ctx);
 				if(imgX < 0 || imgZ < 0) {
-					System.err.println("Negative image coordinate: " + anchorX + "," + anchorZ + " cx=" + cx + " cz=" + cz);
+					System.err.println("Negative image coordinate: " + imgX + "," + imgZ + " cx=" + cx + " cz=" + cz);
 					continue;
 				}
 				if(ctx.showChunkGrid && (x == 15 || z == 15)) {
@@ -207,6 +173,10 @@ public class PaintEngine {
 				}
 				ctx.img.setRGB(imgX, imgZ, pixel.getRGB());
 			}
+		}
+		if(ctx.imageObserver != null) {
+			ctx.imageObserver.imageUpdate(ctx.img, ImageObserver.SOMEBITS, anchorX < 0 ? 0 : anchorX,
+					anchorZ < 0 ? 0 : anchorZ, 16, 16);
 		}
 	}
 

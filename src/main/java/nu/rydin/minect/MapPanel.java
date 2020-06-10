@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import net.querz.mca.Chunk;
 import nu.rydin.minect.data.AbstractSurface;
 import nu.rydin.minect.data.DataManager;
 import nu.rydin.minect.data.ChunkWrapper;
@@ -108,7 +107,7 @@ public class MapPanel extends JPanel {
 							? chunkMgr.getSurface(toChunkIndex(x), toChunkIndex(z), dry)
 							: chunkMgr.getSlice(toChunkIndex(x), toChunkIndex(z), sliceY);
 					if(s == null) {
-						System.err.println(String.format("Surface is null at %d,%d. Shouldn't happen!", x, z));
+						// Mousing over an uninhabited chunk
 						return;
 					}
 					int lx = toChunkLocal(x);
@@ -283,6 +282,11 @@ public class MapPanel extends JPanel {
 	}
 
 	@Override
+	public boolean imageUpdate(Image img, int infoflags, int x, int y, int w, int h) {
+		return super.imageUpdate(img, infoflags, x, y, w, h);
+	}
+
+	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
@@ -313,19 +317,18 @@ public class MapPanel extends JPanel {
 
 		// Can we reuse the cached image in its entirety?
 		if(cachedImage != null && xMin == cacheImgX && zMin == cacheImgZ) {
-			g.drawImage(cachedImage, 0, 0, this);
+			g.drawImage(cachedImage, 0, 0, null);
 			return;
 		}
 		
 		// Can we reuse part of the cached image?
 		final BufferedImage img = new BufferedImage(transform(this.getWidth()), transform(this.getHeight()), BufferedImage.TYPE_INT_RGB);
-		/*
 		if(cachedImage != null && cacheImgX < xMax && cacheImgZ < zMax && cacheImgX + cachedImage.getWidth() > xMin && cacheImgZ + cachedImage.getHeight() > zMin) {
 			Graphics2D bg = (Graphics2D) img.getGraphics();
 			System.out.println("cachedX: " + cacheImgX + ", width: " + cachedImage.getWidth() + ", xMin: " + xMin + " drawMax: " + (cacheImgX + cachedImage.getWidth()));
 			bg.drawImage(cachedImage, cacheImgX - xMin, cacheImgZ - zMin, null);
-			//g.drawImage(img, 0, 0, this);
-						
+			g.drawImage(img, 0, 0, this);
+
 			// Need to fill on the left?
 			//
 			if(xMin < cacheImgX)
@@ -347,27 +350,53 @@ public class MapPanel extends JPanel {
 				this.paintRect(img, xMin, cacheImgZ + cachedImage.getHeight(), xMax, zMax);
 		} else {
 			// No overlap/no image. Complete repaint.
-			// */
+			//
+			g.drawImage(img, 0, 0, this);
 			this.paintRect(img, xMin, zMin, xMax, zMax);
-		//}
-		g.drawImage(img, 0, 0, this);
+		}
 		cachedImage = img;
 		cacheImgX = xMin;
 		cacheImgZ = zMin;
 		System.out.println("Rendering required " + (chunkMgr.getReads() - startReads) + " reads");
 	}
 
-	private void paintRect(BufferedImage img, int x0, int z0, int xMax, int zMax)
+	private boolean paintRect(BufferedImage img, int x0, int z0, int xMax, int zMax)
 	{
 		PaintEngine.Context ctx = new PaintEngine.Context(
-				img.getGraphics(), img, this, x0, z0, xMax, zMax, this.sliceY,
+				img.getGraphics(), img, this, x0, z0, xMax, zMax, this.xMin, this.zMin, this.sliceY,
 				this.mapMode, this.dry, this.paintShade, this.paintContour, this.night, this.highlightTorches,
 				this.paintLight, this.showChunkGrid);
-		try {
-			paintEngine.paintArea(ctx);
-		} catch(IOException e) {
-			e.printStackTrace();
-			return;
+
+		// If all four corner chunks can be found in cache, chance are pretty good the image can be rendered
+		// quickly, so no need to do it asynchronously.
+		if(isProbablyCached(x0, z0, xMax, zMax)) {
+			try {
+				paintEngine.paintArea(ctx);
+				return false;
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			paintEngine.paintAreaAsynch(ctx);
+			return true;
+		}
+	}
+
+	private boolean isProbablyCached(int x0, int z0, int xMax, int zMax) {
+		int cx0 = toChunkIndex(x0);
+		int cz0 = toChunkIndex(z0);
+		int cxMax = toChunkIndex(xMax);
+		int czMax = toChunkIndex(zMax);
+		if(mapMode == SURFACE) {
+			return chunkMgr.isSurfaceCached(cx0, cz0, dry) &&
+					chunkMgr.isSurfaceCached(cxMax, cz0, dry) &&
+					chunkMgr.isSurfaceCached(cxMax, czMax, dry) &&
+					chunkMgr.isSurfaceCached(cx0, czMax, dry);
+		} else {
+			return chunkMgr.isSliceCached(cx0, cz0, sliceY) &&
+					chunkMgr.isSliceCached(cxMax, cz0, sliceY) &&
+					chunkMgr.isSliceCached(cxMax, czMax, sliceY) &&
+					chunkMgr.isSliceCached(cx0, czMax, sliceY);
 		}
 	}
 }
