@@ -1,36 +1,35 @@
 package nu.rydin.minect;
 
 public class BlockEvent {
-	private final int x;
-	
-	private final int y;
-	
-	private final int z;
-	
-	private final int type;
+  private final int x;
 
-	public BlockEvent(int x, int y, int z, int type) {
-		super();
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.type = type;
-	}
+  private final int y;
 
-	public int getX() {
-		return x;
-	}
+  private final int z;
 
-	public int getY() {
-		return y; 
-	}
+  private final int type;
 
-	public int getZ() {
-		return z;
-	}
+  public BlockEvent(int x, int y, int z, int type) {
+    super();
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.type = type;
+  }
 
-	public int getType() {
-		return type;
-	}
-	
+  public int getX() {
+    return x;
+  }
+
+  public int getY() {
+    return y;
+  }
+
+  public int getZ() {
+    return z;
+  }
+
+  public int getType() {
+    return type;
+  }
 }
