@@ -1,21 +1,22 @@
 package nu.rydin.minect.data;
 
-import java.util.Objects;
 import net.querz.mca.Chunk;
 import net.querz.mca.Section;
 import nu.rydin.minect.BlockMapper;
 
-public abstract class AbstractSurface {
-  private ArbitraryWordArray blockIds = new ArbitraryWordArray(16 * 16, 9);
+import java.util.Objects;
 
-  private ArbitraryWordArray blockLight = new ArbitraryWordArray(16 * 16, 4);
+public abstract class AbstractSurface implements ElevationMap {
+  private final ArbitraryWordArray blockIds = new ArbitraryWordArray(16 * 16, 9);
 
-  private short[][] biomes = new short[4][4];
+  private final ArbitraryWordArray blockLight = new ArbitraryWordArray(16 * 16, 4);
+
+  private final short[][] biomes = new short[4][4];
 
   protected static class Key {
-    private int x;
+    private final int x;
 
-    private int z;
+    private final int z;
 
     public Key(int x, int z) {
       this.x = x;
@@ -24,8 +25,12 @@ public abstract class AbstractSurface {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
       Key key = (Key) o;
       return x == key.x && z == key.z;
     }
@@ -43,7 +48,7 @@ public abstract class AbstractSurface {
     for (int z = 0; z < 16; ++z) {
       for (int x = 0; x < 16; ++x) {
         int idx = 16 * z + x;
-        int y = this.getHeight(x, z);
+        int y = getHeight(x, z);
 
         // Handle blocklights
         Section s = chunk.getSection(y / 16); // TODO: Handle sparse chunks (missing sections)
@@ -90,6 +95,4 @@ public abstract class AbstractSurface {
   public int getBiome(int x, int z) {
     return biomes[x / 4][z / 4];
   }
-
-  public abstract int getHeight(int x, int z);
 }

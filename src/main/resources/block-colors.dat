@@ -15,6 +15,7 @@ default	                0xFFFF00FF      # To be used when no match is found
 air	                    0x00000000	    # Air
 cave_air	            0x00000000	    # Cave Air
 stone	                0xFF7D7D7D	    # Stone
+infested_stone          0xFF7D997D
 andesite	            0xFF787878	    # Andesite
 diorite	                0xFF808080	    # Diorite
 granite 	            0xFF888888	    # Granite
@@ -173,41 +174,59 @@ moving_piston	        0xFF998159
 
 white_wool	            0xFFDDDDDD	    # White Wool
 white_bed  	            0xFFDDDDDD	    # White Bed
+white_carpet  	        0xFFDDDDDD
 orange_wool	            0xFFDB7D3E	    # Orange Wool
 orange_bed              0xFFDB7D3E	    # Orange Bed
+orange_carpet           0xFFDB7D3E	    # Orange Bed
 magenta_wool	        0xFFB350BC	    # Magenta Wool
 magenta_bed	            0xFFB350BC	    # Magenta Bed
+magenta_carpet	        0xFFB350BC	    # Magenta Bed
 light_blue_wool	        0xFF6A8AC9	    # Light Blue Wool
 light_blue_bed	        0xFF6A8AC9	    # Light Blue Bed
+light_blue_carpet	    0xFF6A8AC9	    # Light Blue Bed
 yellow_wool	            0xFFB1A627	    # Yellow Wool
 yellow_bed	            0xFFB1A627	    # Yellow Bed
+yellow_carpet	        0xFFB1A627	    # Yellow Bed
 lime_wool	            0xFF41AE38	    # Lime Wool
 lime_bed	            0xFF41AE38	    # Lime Bed
+lime_carpet	            0xFF41AE38	    # Lime Bed
 pink_wool	            0xFFD08499	    # Pink Wool
 pink_bed	            0xFFD08499	    # Pink Bed
+pink_carpet	            0xFFD08499	    # Pink Bed
 gray_wool	            0xFF404040	    # Gray Wool
 gray_bed	            0xFF404040	    # Gray Bed
+gray_carpet	            0xFF404040	    # Gray Bed
 light_gray_wool	        0xFF9AA1A1	    # Light Gray Wool
 light_gray_bed	        0xFF9AA1A1	    # Light Gray Bed
+light_gray_carpet       0xFF9AA1A1	    # Light Gray Bed
 cyan_wool	            0xFF2E6E89	    # Cyan Wool
 cyan_bed	            0xFF2E6E89	    # Cyan Bed
+cyan_carpet	            0xFF2E6E89	    # Cyan Bed
 purple_wool	            0xFF7E3DB5	    # Purple Wool
 purple_bed	            0xFF7E3DB5	    # Purple Bed
+purple_carpet	        0xFF7E3DB5	    # Purple Bed
 blue_wool	            0xFF2E388D	    # Blue Wool
 blue_bed	            0xFF2E388D	    # Blue Bed
+blue_carpet	            0xFF2E388D	    # Blue Bed
 brown_wool	            0xFF4F321F	    # Brown Wool
 brown_bed	            0xFF4F321F	    # Brown Bed
+brown_carpet	        0xFF4F321F	    # Brown Bed
 green_wool	            0xFF35461B	    # Green Wool
 green_bed	            0xFF35461B	    # Green Bed
+green_carpet            0xFF35461B	    # Green Bed
 red_wool	            0xFF963430	    # Red Wool
 red_bed 	            0xFF963430	    # Red Bed
+red_carpet 	            0xFF963430	    # Red Bed
 black_wool	            0xFF191616	    # Black Wool
 black_bed	            0xFF191616	    # Black Bed
+black_carpet	        0xFF191616	    # Black Bed
+
 
 dandelion	            0x1E6CA200	    # Dandelion
 rose	                0x1D8A2B0D	    # Rose
 rose_bush               0x1D8A2B0D	    # Rose bush
 red_tulip	            0x1D8A2B0D	    # Red Tulip
+orange_tulip            0xFFF57242
 poppy                   0x1D8A2B0D	    # Poppy
 blue_orchid             0xFF2E388D      # Blue Orchid
 allium                  0xFF7E3DB5      # Allium
@@ -229,6 +248,7 @@ stone_slab	            0xFF9F9F9F	    # Stone Slab
 smooth_stone_slab	    0xFF9F9F9F	    # Smooth Sandstone Slab
 sandstone_slab	        0xFFDAD29E	    # Sandstone Slab
 smooth_sandstone_slab	0xFFCAC28E	    # Smooth Sandstone Slab
+smooth_sandstone_stairs	0xFFCAC28E	    # Smooth Sandstone Slab
 wood_slab	            0xFF9C7F4E	    # Wooden Slab
 cobblestone_slab	    0xFF7A7A7A	    # Cobblestone Slab
 brick_slab	            0xFF926356	    # Brick Slab
@@ -272,7 +292,8 @@ redstone_torch	        0x135D3E26	    # Redstone Torch (inactive)
 redstone_wall_torch     0x135D3E26	    # Redstone Torch (inactive)
 
 snow	                0xFFEFFBFB	    # Snow
-ice	                    0x9F7DADFF	    # Ice
+ice	                    0x9F7DADDD	    # Ice
+packed_ice	            0x9F7DADFF	    # Ice
 snow_block	            0xFFEFFBFB	    # Snow Block
 
 cactus	                0xC30D6318	    # Cactus
@@ -287,7 +308,6 @@ glowstone_block	        0xFF8F7645	    # Glowstone Block
 jack_o_lantern	        0xFFC07615	    # Jack 'o' Lantern
 cake	                0xC3E4CDCE	    # Cake Block
 
-# TODO: Infested rocks
 repeater	0xFF979393	# Redstone Repeater (inactive)
 
 stone_bricks	        0xFF7A7A7A	    # Stone Brick
@@ -324,7 +344,7 @@ dragon_egg	            0xFF0C090F	    # Dragon Egg
 redstone_lamp	        0xFF462B1A	    # Redstone Lamp (inactive)
 cocoa	                0x2E8A8C40	    # Cocoa
 
-emerals_ore	            0xFF6D8074	    # Emerald Ore
+emerald_ore	            0xFF6D8074	    # Emerald Ore
 tripwire_hook	        0x2D8A8171	    # Tripwire Hook
 tripwire	            0x08818181	    # Tripwire
 emerald_block	        0xFF51D975	    # Block of Emerald
@@ -365,6 +385,7 @@ prismarine	            0xFF754974	    # Prismarine
 # Concrete
 red_concrete            0xFF770000
 gray_concrete           0xFF777777
+light_gray_concrete     0xFF999999
 green_concrete          0xFF007700
 lime_concrete           0xFFB0F542
 yellow_concrete         0xFF777700
@@ -374,6 +395,20 @@ brown_concrete          0xFF4F1803
 white_concrete          0xFFCCCCCC
 black_concrete          0xFF000000
 
+# Stained glass
+# TODO: Just copied from concrete colors. May need some fine tuning
+red_stained_glass       0xFF770000
+gray_stained_glass      0xFF777777
+light_gray_stained_glass 0xFF999999
+green_stained_glass     0xFF007700
+lime_stained_glass      0xFFB0F542
+yellow_stained_glass    0xFF777700
+blue_stained_glass      0xFF000077
+orange_stained_glass    0xFFF57242
+brown_stained_glass     0xFF4F1803
+white_stained_glass     0xFFCCCCCC
+black_stained_glass     0xFF000000
+
 slime_block             0xFF5FFA93
 
 purpur                  0xFFCF7ABC
@@ -381,7 +416,21 @@ purpur_pillar           0xFFCF7ABC
 purpur_slab             0xFFCF7ABC
 purpur_block            0xFFCF7ABC
 
-orange_terracotta       0xFFD9661A
+clay                    0xFF888888
+
+# Terracotta
+# TODO: Just copied from concrete colors. May need some fine tuning
+red_terracotta          0xFF770000
+gray_terracotta         0xFF777777
+light_gray_terracotta   0xFF999999
+green_terracotta        0xFF007700
+lime_terracotta         0xFFB0F542
+yellow_terracotta       0xFF777700
+blue_terracotta         0xFF000077
+orange_terracotta       0xFFF57242
+brown_terracotta        0xFF4F1803
+white_terracotta        0xFFCCCCCC
+black_terracotta        0xFF000000
 
 scaffolding             0xFFBFAA21
 

@@ -123,7 +123,7 @@ public class BlockMapper {
     return blockTypes.get(blockId).lightSource;
   }
 
-  public short getIdForName(String name) {
+  public synchronized short getIdForName(String name) {
     Short id = nameToIndex.get(name);
     if (id != null) {
       return id;
@@ -136,11 +136,11 @@ public class BlockMapper {
     return idx;
   }
 
-  public String getBlockName(int blockId) {
+  public synchronized String getBlockName(int blockId) {
     return blockTypes.get(blockId).name;
   }
 
-  public int getUndefinedId() {
+  public synchronized int getUndefinedId() {
     return undefinedId;
   }
 }

@@ -1,30 +1,20 @@
 package nu.rydin.minect;
 
-import java.awt.Dimension;
+import nu.rydin.minect.data.DataManager;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeEvent;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.WindowConstants;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ChangeEvent;
-import nu.rydin.minect.data.DataManager;
 
 public class MineCTApplication extends JFrame {
+  private static final long serialVersionUID = -2054778334977399472L;
   private final int initialZoom = 5;
 
   private DataManager chunkMgr;
@@ -66,8 +56,11 @@ public class MineCTApplication extends JFrame {
       String command = e.getActionCommand();
       boolean checked = ((JToggleButton) e.getSource()).isSelected();
       if ("CT".equals(command)) {
-        if (checked) mapPanel.setMode(MapPanel.SLICE);
-        else mapPanel.setMode(MapPanel.SURFACE);
+        if (checked) {
+          mapPanel.setMode(MapPanel.SLICE);
+        } else {
+          mapPanel.setMode(MapPanel.SURFACE);
+        }
       } else if ("TORCH".equals(command)) {
         mapPanel.setHighlightTorches(checked);
       } else if ("LIGHT".equals(command)) {
@@ -93,56 +86,52 @@ public class MineCTApplication extends JFrame {
     menuBar.add(file);
 
     JMenuItem openFile = new JMenuItem("Open Directory", KeyEvent.VK_O);
-    openFile.addActionListener((ActionEvent e) -> openFile());
+    openFile.addActionListener((ActionEvent e) -> openFileDialog());
     file.add(openFile);
 
     JMenuItem openWorld = new JMenuItem("Open World", KeyEvent.VK_W);
     file.add(openWorld);
     file.addActionListener((ActionEvent e) -> openWorld());
-    this.setJMenuBar(menuBar);
+    setJMenuBar(menuBar);
 
     // Create Window Contents
     //
     JToolBar toolbar = new JToolBar("Main toolbar");
-    toolbar.add(ctButton = this.makeNavigationButton("ct.gif", "CT", "CT mode", "CT"));
+    toolbar.add(ctButton = makeNavigationButton("ct.gif", "CT", "CT mode", "CT"));
     toolbar.add(
-        lightButton = this.makeNavigationButton("light.gif", "LIGHT", "Show block light", "Light"));
+        lightButton = makeNavigationButton("light.gif", "LIGHT", "Show block light", "Light"));
     toolbar.add(
-        torchButton =
-            this.makeNavigationButton("torch.gif", "TORCH", "Highlight torches", "Torch"));
+        torchButton = makeNavigationButton("torch.gif", "TORCH", "Highlight torches", "Torch"));
     toolbar.add(
-        contourButton =
-            this.makeNavigationButton("contour.gif", "CONTOUR", "Contour lines", "Contour"));
+        contourButton = makeNavigationButton("contour.gif", "CONTOUR", "Contour lines", "Contour"));
+    toolbar.add(dryButton = makeNavigationButton("water.gif", "DRY", "Show/hide water", "Water"));
+    toolbar.add(nightButton = makeNavigationButton("night.gif", "NIGHT", "Night mode", "Night"));
     toolbar.add(
-        dryButton = this.makeNavigationButton("water.gif", "DRY", "Show/hide water", "Water"));
-    toolbar.add(
-        nightButton = this.makeNavigationButton("night.gif", "NIGHT", "Night mode", "Night"));
-    toolbar.add(
-        chunkButton = this.makeNavigationButton("chunk.png", "CHUNK", "Show chunk grid", "Chunk"));
-    this.add(toolbar);
+        chunkButton = makeNavigationButton("chunk.png", "CHUNK", "Show chunk grid", "Chunk"));
+    add(toolbar);
 
     blockMapper =
         new BlockMapper(
-            this.getClass().getResource("/block-colors.dat"),
-            this.getClass().getResource("/biome-colors.dat"));
+            getClass().getResource("/block-colors.dat"),
+            getClass().getResource("/biome-colors.dat"));
     mapPanel = new MapPanel(blockMapper);
-    this.add(mapPanel);
-    GroupLayout layout = new GroupLayout(this.getContentPane());
-    this.setLayout(layout);
+    add(mapPanel);
+    GroupLayout layout = new GroupLayout(getContentPane());
+    setLayout(layout);
     mapPanel.setVisible(true);
     mapPanel.setView(0, 0, 25);
     mapPanel.setMode(MapPanel.SURFACE);
     mapPanel.setPreferredSize(new Dimension(1000, 1000));
-    this.setBounds(0, 0, 400, 400);
+    setBounds(0, 0, 400, 400);
 
     layerSlider = new JSlider(JSlider.VERTICAL, 0, 100, 50);
     layerSlider.setPaintTicks(true);
-    this.add(layerSlider);
+    add(layerSlider);
     layerSlider.addChangeListener((ChangeEvent e) -> mapPanel.setLayer(layerSlider.getValue()));
 
     scaleSlider = new JSlider(JSlider.VERTICAL, 1, 10, initialZoom);
     scaleSlider.setPaintTicks(true);
-    this.add(scaleSlider);
+    add(scaleSlider);
     scaleSlider.addChangeListener(
         (ChangeEvent e) -> mapPanel.setScale((double) scaleSlider.getValue() / 5.0D));
     mapPanel.setScale(initialZoom / 5.0D);
@@ -197,14 +186,14 @@ public class MineCTApplication extends JFrame {
 
     layerSlider.setVisible(true);
     // mapPanel.setHighlight(58);
-    this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
   }
 
   protected JToggleButton makeNavigationButton(
       String imageName, String actionCommand, String toolTipText, String altText) {
 
     String imgLocation = "/" + imageName;
-    URL imageURL = this.getClass().getResource(imgLocation);
+    URL imageURL = getClass().getResource(imgLocation);
     JToggleButton button = new JToggleButton();
     button.setActionCommand(actionCommand);
     button.setToolTipText(toolTipText);
@@ -220,15 +209,19 @@ public class MineCTApplication extends JFrame {
     return button;
   }
 
-  protected void openFile() {
+  protected void openFileDialog() {
     JFileChooser fc = new JFileChooser(workingDirectory);
     fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     int status = fc.showOpenDialog(this);
     if (status == JFileChooser.APPROVE_OPTION) {
-      chunkMgr = new DataManager(fc.getSelectedFile(), blockMapper);
-      mapPanel.setChunkManager(chunkMgr);
-      mapPanel.setView(-17, 0, layerSlider.getValue());
+      openDirectory(fc.getSelectedFile());
     }
+  }
+
+  public void openDirectory(File dir) {
+    chunkMgr = new DataManager(dir, blockMapper);
+    mapPanel.setChunkManager(chunkMgr);
+    mapPanel.setView(0, 0, layerSlider.getValue());
   }
 
   protected void openWorld() {}

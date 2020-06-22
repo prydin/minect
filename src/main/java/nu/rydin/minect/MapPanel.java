@@ -1,5 +1,10 @@
 package nu.rydin.minect;
 
+import nu.rydin.minect.data.AbstractSurface;
+import nu.rydin.minect.data.ChunkWrapper;
+import nu.rydin.minect.data.DataManager;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
@@ -7,12 +12,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
-import nu.rydin.minect.data.AbstractSurface;
-import nu.rydin.minect.data.ChunkWrapper;
-import nu.rydin.minect.data.DataManager;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MapPanel extends JPanel {
+public class MapPanel extends JPanel implements JobGenerationKeeper {
 
   static final int SURFACE = 0;
 
@@ -62,6 +64,8 @@ public class MapPanel extends JPanel {
   private final PaintEngine paintEngine;
 
   private final BlockMapper blockMapper;
+
+  private final AtomicInteger jobGeneration = new AtomicInteger();
 
   MapPanel(BlockMapper blockMapper) {
     super();
@@ -281,6 +285,16 @@ public class MapPanel extends JPanel {
   }
 
   @Override
+  public int getJobGeneration() {
+    return jobGeneration.get();
+  }
+
+  @Override
+  public int incrementJobGeneration() {
+    return jobGeneration.incrementAndGet();
+  }
+
+  @Override
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
 
@@ -315,6 +329,11 @@ public class MapPanel extends JPanel {
       return;
     }
 
+    // Increment the paint job generation. This allows asynchronous paint jobs
+    // from a previous repaint to understand that they're stale and should stop.
+    int jobGeneration = incrementJobGeneration();
+    System.err.println("Generation: " + jobGeneration);
+
     // Can we reuse part of the cached image?
     BufferedImage img =
         new BufferedImage(
@@ -335,49 +354,53 @@ public class MapPanel extends JPanel {
               + " drawMax: "
               + (cacheImgX + cachedImage.getWidth()));
       bg.drawImage(cachedImage, cacheImgX - xMin, cacheImgZ - zMin, null);
-      g.drawImage(img, 0, 0, this);
 
       // Need to fill on the left?
       //
       if (xMin < cacheImgX) {
-        paintRect(img, xMin, zMin, cacheImgX + 1, zMax);
+        paintRect(img, xMin, zMin, cacheImgX + 1, zMax, jobGeneration);
       }
 
       // Need to fill on the right?
       //
       if (xMin > cacheImgX) {
-        paintRect(img, cacheImgX + cachedImage.getWidth(), zMin, xMax, zMax);
+        paintRect(img, cacheImgX + cachedImage.getWidth(), zMin, xMax, zMax, jobGeneration);
       }
 
       // Need to fill on top?
       //
       if (zMin < cacheImgZ) {
-        paintRect(img, xMin, zMin, xMax, cacheImgZ + 1);
+        paintRect(img, xMin, zMin, xMax, cacheImgZ + 1, jobGeneration);
       }
 
       // Need to fill on the bottom?
       //
       if (zMin > cacheImgZ) {
-        paintRect(img, xMin, cacheImgZ + cachedImage.getHeight(), xMax, zMax);
+        paintRect(img, xMin, cacheImgZ + cachedImage.getHeight(), xMax, zMax, jobGeneration);
       }
+      g.drawImage(img, 0, 0, this);
     } else {
       // No overlap/no image. Complete repaint.
       //
+      paintRect(img, xMin, zMin, xMax, zMax, jobGeneration);
       g.drawImage(img, 0, 0, this);
-      paintRect(img, xMin, zMin, xMax, zMax);
     }
+    imageUpdate(img, ALLBITS, 0, 0, 0, 0);
     cachedImage = img;
     cacheImgX = xMin;
     cacheImgZ = zMin;
     System.out.println("Rendering required " + (chunkMgr.getReads() - startReads) + " reads");
   }
 
-  private boolean paintRect(BufferedImage img, int x0, int z0, int xMax, int zMax) {
+  private boolean paintRect(
+      BufferedImage img, int x0, int z0, int xMax, int zMax, int jobGeneration) {
     PaintEngine.Context ctx =
         new PaintEngine.Context(
             img.getGraphics(),
             img,
             this,
+            this,
+            jobGeneration,
             x0,
             z0,
             xMax,

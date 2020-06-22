@@ -1,18 +1,20 @@
 package nu.rydin.minect;
 
+import nu.rydin.minect.data.AbstractSurface;
+import nu.rydin.minect.data.DataManager;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
-import nu.rydin.minect.data.AbstractSurface;
-import nu.rydin.minect.data.DataManager;
 
 public class PaintEngine {
 
   public static class Context {
+
     private final Graphics graphics;
     private final BufferedImage img;
     private final int x0;
@@ -30,13 +32,20 @@ public class PaintEngine {
     private final boolean highlightTorches;
     private final boolean paintLight;
     private final ImageObserver imageObserver;
-    private boolean showChunkGrid = false;
+    private final JobGenerationKeeper jobGenerationKeeper;
+    private final int jobGeneration;
+    private final boolean showChunkGrid;
+    private final int[][] upHeights;
+    private final int[] leftHeights = new int[16];
+    private int upLeftHeight;
     private List<Point> torches = new ArrayList<>();
 
     public Context(
         Graphics graphics,
         BufferedImage img,
         ImageObserver imageObserver,
+        JobGenerationKeeper jobGenerationKeeper,
+        int jobGeneration,
         int x0,
         int z0,
         int xMax,
@@ -55,6 +64,7 @@ public class PaintEngine {
       this.graphics = graphics;
       this.img = img;
       this.x0 = x0;
+      this.jobGeneration = jobGeneration;
       this.z0 = z0;
       this.xMax = xMax;
       this.zMax = zMax;
@@ -69,10 +79,18 @@ public class PaintEngine {
       this.highlightTorches = highlightTorches;
       this.paintLight = paintLight;
       this.imageObserver = imageObserver;
+      this.jobGenerationKeeper = jobGenerationKeeper;
       if (highlightTorches) {
-        this.torches = new ArrayList<>();
+        torches = new ArrayList<>();
       }
       this.showChunkGrid = showChunkGrid;
+      int xChunks = ((xMax - x0) / 16) + 1;
+      upHeights = new int[xChunks][];
+      System.err.println("Allocating " + xChunks + " upHeights");
+    }
+
+    public boolean isJobStale() {
+      return jobGeneration != jobGenerationKeeper.getJobGeneration();
     }
   }
 
@@ -85,12 +103,15 @@ public class PaintEngine {
 
     @Override
     protected Void doInBackground() throws Exception {
-      PaintEngine.this.paintArea(ctx);
+      // We should never, ever have multiple threads using the same context.
+      synchronized (ctx) {
+        paintArea(ctx);
+      }
       return null;
     }
   }
 
-  private BlockMapper blockMapper;
+  private final BlockMapper blockMapper;
 
   private DataManager chunkManager;
 
@@ -111,9 +132,9 @@ public class PaintEngine {
     int rxMax = toRegionIndex(ctx.xMax);
     int rz0 = toRegionIndex(ctx.z0);
     int rzMax = toRegionIndex(ctx.zMax);
-    for (int rz = rz0; rz <= rzMax; ++rz) {
-      for (int rx = rx0; rx <= rxMax; ++rx) {
-        this.paintRegion(rx, rz, ctx);
+    for (int rz = rz0; rz <= rzMax && !ctx.isJobStale(); ++rz) {
+      for (int rx = rx0; rx <= rxMax && !ctx.isJobStale(); ++rx) {
+        paintRegion(rx, rz, ctx);
       }
     }
 
@@ -139,12 +160,23 @@ public class PaintEngine {
             + Runtime.getRuntime().freeMemory() / 1024 / 1024
             + "/"
             + Runtime.getRuntime().maxMemory() / 1024 / 1024);
-    int startX = rx * 512 - ctx.x0 < 0 ? (ctx.x0 & 511) / 16 : 0;
-    int startZ = rz * 512 - ctx.z0 < 0 ? (ctx.z0 & 511) / 16 : 0;
-    for (int cz = startZ; cz < 32; ++cz) {
-      for (int cx = startX; cx < 32; ++cx) {
-        this.paintChunk(cx, cz, rx, rz, ctx);
+    int partialX = (ctx.x0 & 511) / 16;
+    int partialZ = (ctx.z0 & 511) / 16;
+    int startX = rx * 512 - ctx.x0 < 0 ? partialX : 0;
+    int startZ = rz * 512 - ctx.z0 < 0 ? partialZ : 0;
+    int endX = Math.min(32, ((ctx.img.getWidth() + ctx.globalX0 - rx * 512) / 16) + 1);
+    int endZ = Math.min(32, ((ctx.img.getHeight() + ctx.globalZ0 - rz * 512) / 16) + 1);
+
+    System.err.println(
+        String.format("StartX: %d StartZ: %d EndX: %d EndZ: %d", startX, startZ, endX, endZ));
+
+    for (int cz = startZ; cz < endZ && !ctx.isJobStale(); ++cz) {
+      for (int cx = startX; cx < endX && !ctx.isJobStale(); ++cx) {
+        paintChunk(cx, cz, rx, rz, ctx);
       }
+    }
+    if (ctx.isJobStale()) {
+      System.out.println("Aborting stale paint job");
     }
   }
 
@@ -158,6 +190,7 @@ public class PaintEngine {
     if (surface == null) {
       return;
     }
+
     int globalXOffset = ctx.x0 - ctx.globalX0;
     int globalZOffset = ctx.z0 - ctx.globalZ0;
 
@@ -183,7 +216,7 @@ public class PaintEngine {
         }
 
         int y = surface.getHeight(x, z);
-        Color pixel = this.getPixelColor(surface, x, y, z, ctx);
+        Color pixel = getPixelColor(surface, x, y, z, ctx);
         if (imgX < 0 || imgZ < 0) {
           System.err.println(
               "Negative image coordinate: " + imgX + "," + imgZ + " cx=" + cx + " cz=" + cz);
@@ -204,6 +237,22 @@ public class PaintEngine {
           16,
           16);
     }
+
+    // Update boundary heights
+    if ((anchorX + globalXOffset) / 16 >= ctx.upHeights.length) {
+      System.out.println(
+          String.format(
+              "index: %d, length: %d", (anchorX + globalXOffset) / 16, ctx.upHeights.length));
+    }
+    /*
+    int[] uh = new int[16];
+    for (int i = 0; i < 16; ++i) {
+      uh[i] = surface.getHeight(i, 15);
+      ctx.leftHeights[i] = surface.getHeight(15, i);
+    }
+    ctx.upHeights[(anchorX + globalXOffset) / 16] = uh;
+
+     */
   }
 
   private Color getPixelColor(AbstractSurface surface, int x, int y, int z, Context ctx) {
@@ -217,10 +266,8 @@ public class PaintEngine {
 
           // Calculations for shading effect
           int y1 = y;
-          if (x < 15 && z < 15) {
-            y1 = surface.getHeight(x + 1, z + 1);
-          } else {
-            // TODO: Deal with edges
+          if (x > 0 && z > 0) {
+            y1 = surface.getHeight((x - 1) & 15, (z - 1) & 15);
           }
 
           float factor = 1.0F - (((float) y1 - (float) y) / 10.0F);
@@ -234,16 +281,13 @@ public class PaintEngine {
                   (int) Math.min((float) pixel.getBlue() * factor, 255));
         }
         if (ctx.paintElevation) {
-          int layer = y / 5;
-          boolean darken = false;
-          if (x < 15 && z < 15) {
-            darken =
-                layer != surface.getHeight(x + 1, z) / 5
-                    || layer != surface.getHeight(x, z + 1) / 5;
-          } else {
-            // TODO: Deal with edges
+          if (x > 0 && z > 0) {
+            int layer = y / 5;
+            if (surface.getHeight(x - 1, z) / 5 != layer
+                || surface.getHeight(x, z - 1) / 5 != layer) {
+              pixel = pixel.darker();
+            }
           }
-          if (darken) pixel = pixel.darker();
         }
         if (ctx.night) {
           float factor = 0.2F + ((float) surface.getBlockLight(x, z) / 16.0F) * 0.8F;
@@ -259,7 +303,9 @@ public class PaintEngine {
         int biome = surface.getBiome(x, z);
         if (ctx.paintLight && blockId == 0) {
           pixel = new Color(240, 240, 255 - 16 * surface.getBlockLight(x, z));
-        } else pixel = blockMapper.mapColor(blockId, biome);
+        } else {
+          pixel = blockMapper.mapColor(blockId, biome);
+        }
         break;
       default:
         System.err.println("Unknown map mode. Aborting redraw");
